@@ -42,10 +42,12 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response != null) {
+          if (!mounted) return;
+          
           setState(() => _isLoading = false);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => UserPage(user: response)),
+            MaterialPageRoute(builder: (context) => const UserPage()),
           );
         } else {
           setState(() {
