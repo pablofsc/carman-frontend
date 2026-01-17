@@ -1,13 +1,11 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
+import '../clients/api_client.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
 import 'storage_service.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:8080';
-
   Future<LoginResponse?> login(String username, String password) async {
     final response = await _sendLoginReq(username, password);
 
@@ -15,7 +13,10 @@ class AuthService {
       return null;
     }
 
-    await StorageService.write('login_response', jsonEncode(response.toJson()));
+    await StorageService.write(
+      'login_response',
+      convert.jsonEncode(response.toJson()),
+    );
 
     return response;
   }
@@ -24,14 +25,14 @@ class AuthService {
     try {
       final request = LoginRequest(username: username, password: password);
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/login'),
+      final response = await ApiClient.post(
+        '/auth/login',
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(request.toJson()),
+        body: convert.jsonEncode(request.toJson()),
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = convert.jsonDecode(response.body) as Map<String, dynamic>;
         return LoginResponse.fromJson(data);
       }
 
@@ -52,10 +53,23 @@ class AuthService {
       return null;
     }
     
-    return LoginResponse.fromJson(jsonDecode(jsonData));
+    return LoginResponse.fromJson(convert.jsonDecode(jsonData));
   }
 
   Future<void> logout() async {
     await StorageService.clear('login_response');
+  }
+
+  Future<String?> getAuthToken() async {
+    final loginResponse = await getCurrentUser();
+    return loginResponse?.accessToken;
+  }
+
+  Future<Map<String, String>> getAuthHeaders() async {
+    final token = await getAuthToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
   }
 }
