@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import 'user_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,10 +10,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _authService = AuthService();
+  
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -45,10 +45,7 @@ class _LoginPageState extends State<LoginPage> {
           if (!mounted) return;
           
           setState(() => _isLoading = false);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const UserPage()),
-          );
+          Navigator.pushReplacementNamed(context, '/');
         } else {
           setState(() {
             _isLoading = false;
