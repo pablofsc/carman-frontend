@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../models/vehicle.dart';
-import '../repositories/vehicle_repository.dart';
 import '../services/selected_vehicle_service.dart';
+import '../services/vehicles_service.dart';
+import 'delete_vehicle_dialog.dart';
+import 'create_vehicle_dialog.dart';
 
 class VehicleSelector extends StatefulWidget {
   final Function(Vehicle?)? onVehicleSelected;
@@ -15,164 +17,141 @@ class VehicleSelector extends StatefulWidget {
 
 class _VehicleSelectorState extends State<VehicleSelector> {
   final SelectedVehicleService _selVehService = SelectedVehicleService();
-
-  late Future<List<Vehicle>> _vehiclesFuture;
-  late String? _selectedVehicleId;
+  final VehiclesService _vehiclesService = VehiclesService();
 
   @override
   void initState() {
     super.initState();
 
-    _loadSelectedVehicle();
-    _vehiclesFuture = _fetchVehicles();
+    _selVehService.fetchSelectedVehicle();
+    _vehiclesService.fetchVehicles();
   }
 
-  Future<void> _loadSelectedVehicle() async {
-    await _selVehService.fetchSelectedVehicle();
-
-    if (mounted) {
-      setState(() {
-        _selectedVehicleId = _selVehService.selectedVehicle?.id;
-      });
-    }
-  }
-
-  Future<List<Vehicle>> _fetchVehicles() async {
-    return VehicleRepository.getAllVehicles();
+  Future<void> _setSelectedVehicle(Vehicle vehicle) async {
+    await _selVehService.setSelectedVehicle(vehicle);
+    widget.onVehicleSelected?.call(vehicle);
   }
 
   void _showVehicleSelector(BuildContext context, List<Vehicle> vehicles) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Select a Vehicle',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: vehicles.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final vehicle = vehicles[index];
+        return ValueListenableBuilder<List<Vehicle>>(
+          valueListenable: _vehiclesService.vehiclesNotifier,
+          builder: (context, vehicles, child) {
+            return ValueListenableBuilder<Vehicle?>(
+              valueListenable: _selVehService.selVehNotifier,
+              builder: (context, selectedVehicle, _) {
+                return SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Select a Vehicle',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.7,
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: vehicles.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final vehicle = vehicles[index];
 
-                  return ListTile(
-                    leading: const Icon(Icons.directions_car),
-                    title: Text(vehicle.displayName),
-                    subtitle: Text(
-                      '${vehicle.year} • ${vehicle.type}  • ${vehicle.id}',
-                    ),
-                    trailing: vehicle.id == _selectedVehicleId
-                        ? Icon(
-                            Icons.check,
-                            color: Theme.of(context).colorScheme.primary,
-                          )
-                        : null,
-                    onTap: () async {
-                      await _setSelectedVehicle(vehicle);
+                            return ListTile(
+                              leading: Icon(Icons.directions_car),
+                              title: Text(vehicle.displayName),
+                              subtitle: Text(
+                                '${vehicle.year} • ${vehicle.type} • ${vehicle.id}',
+                              ),
+                              trailing: vehicle.id == selectedVehicle?.id
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    )
+                                  : null,
+                              onTap: () async {
+                                await _setSelectedVehicle(vehicle);
 
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              onLongPress: () {
+                                DeleteVehicleDialog.show(context, vehicle);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer,
+                          ),
+                          onPressed: () =>
+                              CreateVehicleDialog.show(context, (vehicle) {
+                                _vehiclesService.fetchVehicles();
+                              }),
+                          child: Text('Add new vehicle'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         );
       },
     );
   }
 
-  Future<void> _setSelectedVehicle(Vehicle vehicle) async {
-    if (mounted) {
-      setState(() {
-        _selectedVehicleId = vehicle.id;
-      });
-
-      await _selVehService.setSelectedVehicle(vehicle);
-      widget.onVehicleSelected?.call(vehicle);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Vehicle>>(
-      future: _vehiclesFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            width: 200, child: LinearProgressIndicator(),
-          );
-        }
+    return ValueListenableBuilder<List<Vehicle>>(
+      valueListenable: _vehiclesService.vehiclesNotifier,
+      builder: (context, vehicles, child) {
+        return ValueListenableBuilder<Vehicle?>(
+          valueListenable: _selVehService.selVehNotifier,
+          builder: (context, selectedVehicle, _) {
+            final displayText = vehicles.isEmpty
+                ? 'No vehicles available'
+                : selectedVehicle != null
+                ? selectedVehicle.displayName.toUpperCase()
+                : 'Select a vehicle';
 
-        if (snapshot.hasError) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextButton(
-              onPressed: () =>
-                  setState(() => _vehiclesFuture = _fetchVehicles()),
-              child: const Row(
+            return TextButton(
+              onPressed: vehicles.isEmpty
+                  ? null
+                  : () => _showVehicleSelector(context, vehicles),
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('ERROR', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Icon(Icons.arrow_drop_down),
-                ],
-              ),
-            ),
-          );
-        }
-
-        final vehicles = snapshot.data ?? [];
-
-        if (vehicles.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextButton(
-              onPressed: null,
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'NO VEHICLES',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Icon(Icons.directions_car),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      displayText,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   Icon(Icons.arrow_drop_down),
                 ],
               ),
-            ),
-          );
-        }
-
-        final selectedVehicle = vehicles.firstWhere(
-          (v) => v.id == _selectedVehicleId,
-          orElse: () => vehicles.first,
-        );
-
-        return TextButton(
-          onPressed: () => _showVehicleSelector(context, vehicles),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.directions_car),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  selectedVehicle.displayName.toUpperCase(),
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              const Icon(Icons.arrow_drop_down),
-            ],
-          ),
+            );
+          },
         );
       },
     );

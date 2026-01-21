@@ -17,14 +17,12 @@ class VehicleRepository {
     required String make,
     required String model,
     required String year,
-    required String author,
   }) async {
     final body = convert.jsonEncode({
       'type': type,
       'make': make,
       'model': model,
       'year': year,
-      'author': author,
     });
 
     final response = await ApiClient.post(
