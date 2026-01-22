@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import 'package:carman/pages/register_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _authService = AuthService();
-  
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _password1Controller = TextEditingController();
+  final _password2Controller = TextEditingController();
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -23,11 +23,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _usernameController.dispose();
-    _passwordController.dispose();
+    _password1Controller.dispose();
+    _password2Controller.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -35,29 +36,27 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        final response = await _authService.login(
+        final response = await _authService.register(
           _usernameController.text.trim(),
-          _passwordController.text,
+          _password1Controller.text,
         );
 
         if (!mounted) return;
 
         if (response != null) {
-          if (!mounted) return;
-          
           setState(() => _isLoading = false);
           Navigator.pushReplacementNamed(context, '/');
         } else {
           setState(() {
             _isLoading = false;
-            _errorMessage = 'Invalid username or password';
+            _errorMessage = 'Could not create account';
           });
         }
       } catch (e) {
         if (!mounted) return;
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Unable to connect to server. Please try again.';
+          _errorMessage = e.toString();
         });
       }
     }
@@ -65,18 +64,31 @@ class _LoginPageState extends State<LoginPage> {
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your username';
+      return 'Please enter a valid username';
     }
+
     return null;
   }
 
-  String? _validatePassword(String? value) {
+  String? _validatePassword1(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     }
     if (value.length < 6) {
       return 'Password must be at least 6 characters';
     }
+
+    return null;
+  }
+
+  String? _validatePassword2(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    if (value != _password1Controller.text) {
+      return 'Passwords do not match';
+    }
+
     return null;
   }
 
@@ -86,6 +98,7 @@ class _LoginPageState extends State<LoginPage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Create Account')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -98,26 +111,12 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // App Logo
-                    Icon(Icons.drive_eta, size: 80, color: colorScheme.primary),
-                    const SizedBox(height: 16),
-
                     // Title
                     Text(
-                      'Welcome to Carman',
+                      'Create your Carman account',
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Subtitle
-                    Text(
-                      'Sign in to continue',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -172,11 +171,9 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Password Field
                     TextFormField(
-                      controller: _passwordController,
+                      controller: _password1Controller,
                       obscureText: true,
-                      textInputAction: TextInputAction.done,
-                      autofillHints: const [AutofillHints.password],
-                      onFieldSubmitted: (_) => _handleLogin(),
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         hintText: 'Enter your password',
@@ -185,12 +182,31 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      validator: _validatePassword,
+                      validator: _validatePassword1,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Confirm Password Field
+                    TextFormField(
+                      controller: _password2Controller,
+                      obscureText: true,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _handleRegister(),
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        hintText: 'Re-enter your password',
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: _validatePassword2,
                     ),
                     const SizedBox(height: 24),
-                    // Login Button
+
+                    // Register Button
                     FilledButton(
-                      onPressed: _isLoading ? null : _handleLogin,
+                      onPressed: _isLoading ? null : _handleRegister,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -207,35 +223,9 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             )
                           : const Text(
-                              'Sign In',
+                              'Create Account',
                               style: TextStyle(fontSize: 16),
                             ),
-                    ),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 4,
-                      children: [
-                        Text("Don't have an account?"),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterPage(),
-                              ),
-                            );
-                          },
-                          style: TextButton.styleFrom(
-                            tapTargetSize: MaterialTapTargetSize.padded,
-                            textStyle: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          child: const Text('Create one'),
-                        ),
-                      ],
                     ),
                   ],
                 ),

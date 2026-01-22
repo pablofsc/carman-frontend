@@ -21,6 +21,38 @@ class AuthService {
     return response;
   }
 
+  Future<LoginResponse?> register(String username, String password) async {
+    try {
+      final request = LoginRequest(username: username, password: password);
+
+      final response = await ApiClient.post(
+        '/auth/register',
+        headers: {'Content-Type': 'application/json'},
+        body: convert.jsonEncode(request.toJson()),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = convert.jsonDecode(response.body);
+        final loginResponse = LoginResponse.fromJson(data);
+
+        await StorageService.write(
+          'login_response',
+          convert.jsonEncode(loginResponse.toJson()),
+        );
+
+        return loginResponse;
+      }
+
+      if (response.statusCode == 409) {
+        throw 'Username is not available';
+      }
+
+      return null;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<LoginResponse?> _sendLoginReq(String username, String password) async {
     try {
       final request = LoginRequest(username: username, password: password);
