@@ -24,7 +24,7 @@ class _VehicleSelectorState extends State<VehicleSelector> {
     super.initState();
 
     _selVehService.fetchSelectedVehicle();
-    _vehiclesService.fetchVehicles();
+    _vehiclesService.refreshVehicles();
   }
 
   Future<void> _setSelectedVehicle(Vehicle vehicle) async {
@@ -101,9 +101,7 @@ class _VehicleSelectorState extends State<VehicleSelector> {
                             ).colorScheme.surfaceContainer,
                           ),
                           onPressed: () =>
-                              CreateVehicleDialog.show(context, (vehicle) {
-                                _vehiclesService.fetchVehicles();
-                              }),
+                            CreateVehicleDialog.show(context),
                           child: Text('Add new vehicle'),
                         ),
                       ),

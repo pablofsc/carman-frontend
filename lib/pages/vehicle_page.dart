@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../elements/vehicle_information.dart';
+import '../elements/create_vehicle_dialog.dart';
 import '../models/vehicle.dart';
-import '../repositories/vehicle_repository.dart';
+import '../services/vehicles_service.dart';
 
 class VehiclePage extends StatefulWidget {
   const VehiclePage({super.key});
@@ -12,33 +13,18 @@ class VehiclePage extends StatefulWidget {
 }
 
 class _VehiclePageState extends State<VehiclePage> {
-  late Future<List<Vehicle>> _vehiclesFuture;
+  final VehiclesService _vehiclesService = VehiclesService();
 
   @override
   void initState() {
     super.initState();
-    _vehiclesFuture = VehicleRepository.getAllVehicles();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Vehicle>>(
-      future: _vehiclesFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-
-        final vehicles = snapshot.data ?? [];
-
+    return ValueListenableBuilder<List<Vehicle>>(
+      valueListenable: _vehiclesService.vehiclesNotifier,
+      builder: (context, vehicles, child) {
         if (vehicles.isEmpty) {
           return Center(
             child: Padding(
@@ -62,7 +48,13 @@ class _VehiclePageState extends State<VehiclePage> {
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
-                ],
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => CreateVehicleDialog.show(context),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Vehicle'),
+                  ),
+                ]
               ),
             ),
           );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/vehicle.dart';
-import '../repositories/vehicle_repository.dart';
+import '../services/vehicles_service.dart';
 
 const List<String> vehicleTypes = [
   'Sedan',
@@ -17,14 +17,14 @@ const List<String> vehicleTypes = [
 ];
 
 class CreateVehicleDialog extends StatefulWidget {
-  final Function(Vehicle?) onVehicleCreated;
+  final Function(Vehicle?)? onVehicleCreated;
 
-  const CreateVehicleDialog({super.key, required this.onVehicleCreated});
+  const CreateVehicleDialog({super.key, this.onVehicleCreated});
 
   static Future<void> show(
-    BuildContext context,
-    Function(Vehicle?) onVehicleCreated,
-  ) {
+    BuildContext context, [
+    Function(Vehicle?)? onVehicleCreated,
+  ]) {
     return showDialog(
       context: context,
       builder: (context) =>
@@ -37,6 +37,8 @@ class CreateVehicleDialog extends StatefulWidget {
 }
 
 class _CreateVehicleDialogState extends State<CreateVehicleDialog> {
+  final VehiclesService _vehiclesService = VehiclesService();
+    
   final _formKey = GlobalKey<FormState>();
   final _makeController = TextEditingController();
   final _modelController = TextEditingController();
@@ -51,7 +53,7 @@ class _CreateVehicleDialogState extends State<CreateVehicleDialog> {
     setState(() => _isLoading = true);
 
     try {
-      final newVehicle = await VehicleRepository.createVehicle(
+      final newVehicle = await _vehiclesService.createVehicle(
         type: _selectedType!,
         make: _makeController.text.trim(),
         model: _modelController.text.trim(),
@@ -59,7 +61,7 @@ class _CreateVehicleDialogState extends State<CreateVehicleDialog> {
       );
 
       if (mounted) {
-        widget.onVehicleCreated(newVehicle);
+        widget.onVehicleCreated?.call(newVehicle);
         Navigator.of(context).pop();
       }
     } catch (e) {
