@@ -32,7 +32,7 @@ class _UserPageState extends State<UserPage> {
             onPressed: () async {
               await _authService.logout();
 
-              if (mounted) {
+              if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/');
               }
             },
