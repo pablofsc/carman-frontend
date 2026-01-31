@@ -1,4 +1,6 @@
 name: Flutter Web Deploy
+permissions:
+  contents: write
 on:
   push:
     branches:
