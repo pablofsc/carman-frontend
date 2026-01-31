@@ -4,20 +4,20 @@ import 'user.dart';
 class Event {
   final String id;
   final DateTime createdAt;
-  final DateTime modifiedAt;
+  final DateTime? modifiedAt;
   final Vehicle vehicle;
   final User author;
-  final String type;
+  final String? type;
   final String? description;
   final double? odometer;
 
   Event({
     required this.id,
     required this.createdAt,
-    required this.modifiedAt,
+    this.modifiedAt,
     required this.vehicle,
     required this.author,
-    required this.type,
+    this.type,
     this.description,
     this.odometer,
   });
@@ -26,7 +26,9 @@ class Event {
     return Event(
       id: json['id'],
       createdAt: DateTime.parse(json['createdAt']),
-      modifiedAt: DateTime.parse(json['modifiedAt']),
+      modifiedAt: json['modifiedAt'] != null
+          ? DateTime.parse(json['modifiedAt'])
+          : null,
       vehicle: Vehicle.fromJson(json['vehicle']),
       author: User.fromJson(json['author']),
       type: json['type'],
@@ -39,9 +41,9 @@ class Event {
     return {
       'id': id,
       'createdAt': createdAt.toIso8601String(),
-      'modifiedAt': modifiedAt.toIso8601String(),
-      'vehicle': vehicle.toJson(),
-      'author': author.toJson(),
+      'modifiedAt': modifiedAt?.toIso8601String(),
+      'vehicle': {'id': vehicle.id},
+      'author': {'id': author.id},
       'type': type,
       'description': description,
       'odometer': odometer,

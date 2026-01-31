@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../elements/vehicle_selector.dart';
 import 'vehicle_page.dart';
+import 'events_page.dart';
 import 'user_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _pages = [const VehiclePage(), const UserPage()];
+    _pages = [const VehiclePage(), const EventsPage(), const UserPage()];
   }
 
   @override
@@ -50,6 +51,11 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.car_rental_outlined),
             selectedIcon: Icon(Icons.car_rental),
             label: 'Vehicle',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.event_note_outlined),
+            selectedIcon: Icon(Icons.event_note),
+            label: 'Events',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outlined),
