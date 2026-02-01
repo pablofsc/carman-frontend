@@ -3,6 +3,7 @@ class LoginResponse {
   final String refreshToken;
   final String tokenType;
   final int expiresIn;
+  final DateTime generatedAt;
   final String userId;
   final String username;
 
@@ -11,6 +12,7 @@ class LoginResponse {
     required this.refreshToken,
     required this.tokenType,
     required this.expiresIn,
+    required this.generatedAt,
     required this.userId,
     required this.username,
   });
@@ -21,6 +23,7 @@ class LoginResponse {
       refreshToken: json['refreshToken'] as String,
       tokenType: json['tokenType'] as String,
       expiresIn: json['expiresIn'] as int,
+      generatedAt: DateTime.parse(json['generatedAt']),
       userId: json['userId'] as String,
       username: json['username'] as String,
     );
@@ -32,8 +35,16 @@ class LoginResponse {
       'refreshToken': refreshToken,
       'tokenType': tokenType,
       'expiresIn': expiresIn,
+      'generatedAt': generatedAt.toIso8601String(),
       'userId': userId,
       'username': username,
     };
+  }
+
+  bool isExpiringSoon(int bufferSeconds) {
+    final expiryTime = generatedAt.millisecondsSinceEpoch + (expiresIn * 1000);
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final bufferMs = bufferSeconds * 1000;
+    return now >= (expiryTime - bufferMs);
   }
 }

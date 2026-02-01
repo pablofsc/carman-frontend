@@ -52,10 +52,18 @@ class _UserPageState extends State<UserPage> {
 
           final user = snapshot.data!;
 
+          final expiryTime = user.generatedAt.add(
+            Duration(seconds: user.expiresIn),
+          );
+          final now = DateTime.now();
+          final timeRemaining = expiryTime.difference(now);
+          final isExpiring = timeRemaining.inSeconds < 300; // 5 minutes
+
           return Padding(
             padding: const EdgeInsets.all(24.0),
             child: ListView(
               children: [
+                // User Identity Section
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
@@ -68,15 +76,111 @@ class _UserPageState extends State<UserPage> {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: const Text('User ID'),
-                    subtitle: Text(user.userId),
+                    subtitle: SelectableText(user.userId),
                     leading: const Icon(Icons.badge),
+                  ),
+                ),
+
+                // Token Timestamps Section
+                const SizedBox(height: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Token Timestamps',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: const Text('Generated At'),
+                    subtitle: Text(user.generatedAt.toString()),
+                    leading: const Icon(Icons.schedule),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: const Text('Expires At'),
+                    subtitle: Text(expiryTime.toString()),
+                    leading: const Icon(Icons.access_time),
+                    trailing: isExpiring
+                        ? const Chip(
+                            label: Text('Expiring Soon'),
+                            backgroundColor: Colors.orange,
+                          )
+                        : null,
+                  ),
+                ),
+
+                // Token Duration Section
+                const SizedBox(height: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Token Duration',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: const Text('Expires In'),
+                    subtitle: Text(
+                      '${user.expiresIn} seconds (${(user.expiresIn / 60).toStringAsFixed(1)} minutes)',
+                    ),
+                    leading: const Icon(Icons.timer),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: const Text('Time Remaining'),
+                    subtitle: Text(
+                      '${timeRemaining.inHours}h ${timeRemaining.inMinutes % 60}m ${timeRemaining.inSeconds % 60}s',
+                    ),
+                    leading: const Icon(Icons.hourglass_bottom),
+                    trailing: isExpiring
+                        ? const Icon(Icons.warning, color: Colors.orange)
+                        : null,
+                  ),
+                ),
+
+                // Token Type Section
+                const SizedBox(height: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Token Type',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: const Text('Type'),
+                    subtitle: Text(user.tokenType),
+                    leading: const Icon(Icons.info_outline),
+                  ),
+                ),
+
+                // Access Token Section
+                const SizedBox(height: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    'Tokens',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: const Text('Access Token'),
-                    subtitle: SelectableText(user.accessToken),
+                    subtitle: SelectableText(
+                      user.accessToken,
+                      style: const TextStyle(fontSize: 10),
+                    ),
                     leading: const Icon(Icons.vpn_key),
                   ),
                 ),
@@ -84,24 +188,11 @@ class _UserPageState extends State<UserPage> {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
                     title: const Text('Refresh Token'),
-                    subtitle: SelectableText(user.refreshToken),
+                    subtitle: SelectableText(
+                      user.refreshToken,
+                      style: const TextStyle(fontSize: 10),
+                    ),
                     leading: const Icon(Icons.refresh),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    title: const Text('Token Type'),
-                    subtitle: Text(user.tokenType),
-                    leading: const Icon(Icons.info_outline),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    title: const Text('Expires In'),
-                    subtitle: Text('${user.expiresIn} seconds'),
-                    leading: const Icon(Icons.timer),
                   ),
                 ),
               ],
