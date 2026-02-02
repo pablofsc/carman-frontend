@@ -8,6 +8,7 @@ on:
 jobs:
   build:    
     runs-on: ubuntu-latest
+    environment: github-pages
 
     steps:
       - uses: actions/checkout@v3
@@ -16,8 +17,6 @@ jobs:
       - name: Build Flutter Web
         env:
           API_BASE_URL: ${{ vars.API_BASE_URL }}
-          # or, if you used Secrets:
-          # API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: |
           flutter build web \
             --release \
