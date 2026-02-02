@@ -1,7 +1,10 @@
 import 'package:http/http.dart' as http;
 
 class ApiClient {
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:8080',
+  );
 
   static Future<http.Response> get(
     String endpoint, {
