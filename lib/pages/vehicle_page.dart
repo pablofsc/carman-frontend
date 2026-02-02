@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../elements/vehicle_information.dart';
 import '../elements/create_vehicle_dialog.dart';
-import '../models/vehicle.dart';
 import '../services/vehicles_service.dart';
 
 class VehiclePage extends StatefulWidget {
@@ -18,13 +17,23 @@ class _VehiclePageState extends State<VehiclePage> {
   @override
   void initState() {
     super.initState();
+    _vehiclesService.refreshVehicles();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<Vehicle>>(
-      valueListenable: _vehiclesService.vehiclesNotifier,
-      builder: (context, vehicles, child) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([
+        _vehiclesService.isLoadingNotifier,
+        _vehiclesService.vehiclesNotifier,
+      ]),
+      builder: (context, child) {
+        final vehicles = _vehiclesService.vehicles;
+
+        if (_vehiclesService.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
         if (vehicles.isEmpty) {
           return Center(
             child: Padding(

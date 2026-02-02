@@ -33,9 +33,18 @@ class _EventsPageState extends State<EventsPage> {
         },
         child: const Icon(Icons.add),
       ),
-      body: ValueListenableBuilder<List<Event>>(
-        valueListenable: _eventsService.eventsNotifier,
-        builder: (context, events, child) {
+      body: ListenableBuilder(
+        listenable: Listenable.merge([
+          _eventsService.isLoadingNotifier,
+          _eventsService.eventsNotifier,
+        ]),
+        builder: (context, child) {
+          final events = _eventsService.events;
+
+          if (_eventsService.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (events.isEmpty) {
             return Center(
               child: Column(
