@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/pages/home_page.dart';
 import 'package:carman/pages/login_page.dart';
 import 'package:carman/services/auth_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const riverpod.ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
