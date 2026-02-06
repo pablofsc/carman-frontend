@@ -12,6 +12,15 @@ class VehicleRepository {
     return data.map((json) => Vehicle.fromJson(json)).toList();
   }
 
+  static Future<Vehicle?> createVehicleFromInstance(Vehicle vehicle) async {
+    return createVehicle(
+      type: vehicle.type,
+      make: vehicle.make,
+      model: vehicle.model,
+      year: vehicle.year,
+    );
+  }
+
   static Future<Vehicle?> createVehicle({
     required String type,
     required String make,

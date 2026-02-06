@@ -1,39 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import '../elements/vehicle_information.dart';
 import '../elements/create_vehicle_dialog.dart';
-import '../services/vehicles_service.dart';
+import 'package:carman/provider/vehicles_provider.dart';
 
-class VehiclePage extends StatefulWidget {
+class VehiclePage extends riverpod.ConsumerStatefulWidget {
   const VehiclePage({super.key});
 
   @override
-  State<VehiclePage> createState() => _VehiclePageState();
+  riverpod.ConsumerState<VehiclePage> createState() => _VehiclePageState();
 }
 
-class _VehiclePageState extends State<VehiclePage> {
-  final VehiclesService _vehiclesService = VehiclesService();
-
-  @override
-  void initState() {
-    super.initState();
-    _vehiclesService.refreshVehicles();
-  }
-
+class _VehiclePageState extends riverpod.ConsumerState<VehiclePage> {
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: Listenable.merge([
-        _vehiclesService.isLoadingNotifier,
-        _vehiclesService.vehiclesNotifier,
-      ]),
-      builder: (context, child) {
-        final vehicles = _vehiclesService.vehicles;
+    final vehicles = ref.watch(vehiclesProvider);
 
-        if (_vehiclesService.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return vehicles.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
 
+      error: (e, _) => Center(child: Text(e.toString())),
+
+      data: (vehicles) {
         if (vehicles.isEmpty) {
           return Center(
             child: Padding(

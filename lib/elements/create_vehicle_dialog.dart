@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import '../models/vehicle.dart';
-import '../services/vehicles_service.dart';
+import 'package:carman/provider/vehicles_provider.dart';
 
 const List<String> vehicleTypes = [
   'Sedan',
@@ -16,28 +17,25 @@ const List<String> vehicleTypes = [
   'Other',
 ];
 
-class CreateVehicleDialog extends StatefulWidget {
+class CreateVehicleDialog extends riverpod.ConsumerStatefulWidget {
   final Function(Vehicle?)? onVehicleCreated;
 
   const CreateVehicleDialog({super.key, this.onVehicleCreated});
 
-  static Future<void> show(
-    BuildContext context, [
-    Function(Vehicle?)? onVehicleCreated,
-  ]) {
+  static Future<void> show(BuildContext context) {
     return showDialog(
       context: context,
-      builder: (context) =>
-          CreateVehicleDialog(onVehicleCreated: onVehicleCreated),
+      builder: (context) => CreateVehicleDialog(),
     );
   }
 
   @override
-  State<CreateVehicleDialog> createState() => _CreateVehicleDialogState();
+  riverpod.ConsumerState<CreateVehicleDialog> createState() =>
+      _CreateVehicleDialogState();
 }
 
-class _CreateVehicleDialogState extends State<CreateVehicleDialog> {
-  final VehiclesService _vehiclesService = VehiclesService();
+class _CreateVehicleDialogState
+    extends riverpod.ConsumerState<CreateVehicleDialog> {
     
   final _formKey = GlobalKey<FormState>();
   final _makeController = TextEditingController();
@@ -47,21 +45,26 @@ class _CreateVehicleDialogState extends State<CreateVehicleDialog> {
   String? _selectedType;
   bool _isLoading = false;
 
+  Future<void> _addNewVehicle() async {
+    await ref
+        .read(vehiclesProvider.notifier)
+        .create(
+          type: _selectedType!,
+          make: _makeController.text.trim(),
+          model: _modelController.text.trim(),
+          year: _yearController.text.trim(),
+        );
+  }
+
   Future<void> _createVehicle() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      final newVehicle = await _vehiclesService.createVehicle(
-        type: _selectedType!,
-        make: _makeController.text.trim(),
-        model: _modelController.text.trim(),
-        year: _yearController.text.trim(),
-      );
+      await _addNewVehicle();
 
       if (mounted) {
-        widget.onVehicleCreated?.call(newVehicle);
         Navigator.of(context).pop();
       }
     } catch (e) {

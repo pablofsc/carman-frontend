@@ -1,10 +1,11 @@
+import 'package:carman/provider/vehicles_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import '../models/vehicle.dart';
 import '../services/selected_vehicle_service.dart';
-import '../services/vehicles_service.dart';
 
-class DeleteVehicleDialog extends StatefulWidget {
+class DeleteVehicleDialog extends riverpod.ConsumerStatefulWidget {
   final Vehicle vehicle;
 
   const DeleteVehicleDialog({super.key, required this.vehicle});
@@ -17,19 +18,25 @@ class DeleteVehicleDialog extends StatefulWidget {
   }
 
   @override
-  State<DeleteVehicleDialog> createState() => _DeleteVehicleDialogState();
+  riverpod.ConsumerState<DeleteVehicleDialog> createState() =>
+      _DeleteVehicleDialogState();
 }
 
-class _DeleteVehicleDialogState extends State<DeleteVehicleDialog> {
-  final VehiclesService _vehiclesService = VehiclesService();
+class _DeleteVehicleDialogState
+    extends riverpod.ConsumerState<DeleteVehicleDialog> {
+      
   final SelectedVehicleService _selVehService = SelectedVehicleService();
   bool _isDeleting = false;
+
+  Future<void> _performDelete() async {
+    await ref.read(vehiclesProvider.notifier).remove(widget.vehicle.id);
+  }
 
   Future<void> _deleteVehicle() async {
     setState(() => _isDeleting = true);
 
     try {
-      await _vehiclesService.deleteVehicle(widget.vehicle.id);
+      await _performDelete();
 
       await _selVehService.fetchSelectedVehicle();
 
