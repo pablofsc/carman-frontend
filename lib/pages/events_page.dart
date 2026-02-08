@@ -1,28 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../elements/delete_event_dialog.dart';
-import '../models/event.dart';
-import '../services/events_service.dart';
-import 'create_event_page.dart';
+import 'package:carman/elements/delete_event_dialog.dart';
+import 'package:carman/models/event.dart';
+import 'package:carman/provider/events_provider.dart';
+import 'package:carman/pages/create_event_page.dart';
 
-class EventsPage extends StatefulWidget {
+class EventsPage extends riverpod.ConsumerWidget {
   const EventsPage({super.key});
 
   @override
-  State<EventsPage> createState() => _EventsPageState();
-}
-
-class _EventsPageState extends State<EventsPage> {
-  final EventsService _eventsService = EventsService();
-
-  @override
-  void initState() {
-    super.initState();
-    _eventsService.refreshEvents();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    final eventsAsync = ref.watch(eventsProvider);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -33,54 +22,60 @@ class _EventsPageState extends State<EventsPage> {
         },
         child: const Icon(Icons.add),
       ),
-      body: ListenableBuilder(
-        listenable: Listenable.merge([
-          _eventsService.isLoadingNotifier,
-          _eventsService.eventsNotifier,
-        ]),
-        builder: (context, child) {
-          final events = _eventsService.events;
-
-          if (_eventsService.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (events.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.event_note,
-                    size: 64,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No events yet',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Events will appear here',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            );
-          }
-
+      body: eventsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error: $error'),
+            ],
+          ),
+        ),
+        data: (events) {
           return RefreshIndicator(
-            onRefresh: _eventsService.refreshEvents,
-            child: ListView.builder(
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-                final event = events[index];
-                return _EventListItem(event: event);
-              },
-            ),
+            onRefresh: () async => ref.refresh(eventsProvider.future),
+            child: events.isEmpty
+                ? ListView(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.event_note,
+                                size: 64,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.primary.withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No events yet',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Events will appear here',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return _EventListItem(event: event);
+                    },
+                  ),
           );
         },
       ),

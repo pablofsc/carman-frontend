@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/provider/selected_vehicle_provider.dart';
-import 'package:carman/services/events_service.dart';
+import 'package:carman/provider/events_provider.dart';
 
 class CreateEventPage extends riverpod.ConsumerStatefulWidget {
   const CreateEventPage({super.key});
@@ -59,16 +59,18 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     });
 
     try {
-      await EventsService().createEvent(
-        vehicleId: selectedVehicle.id,
-        type: _selectedType!,
-        description: _descriptionController.text.isEmpty
-            ? null
-            : _descriptionController.text,
-        odometer: _odometerController.text.isEmpty
-            ? null
-            : double.tryParse(_odometerController.text),
-      );
+      await ref
+          .read(eventsProvider.notifier)
+          .createEvent(
+            vehicleId: selectedVehicle.id,
+            type: _selectedType!,
+            description: _descriptionController.text.isEmpty
+                ? null
+                : _descriptionController.text,
+            odometer: _odometerController.text.isEmpty
+                ? null
+                : double.tryParse(_odometerController.text),
+          );
 
       if (mounted) {
         Navigator.pop(context);

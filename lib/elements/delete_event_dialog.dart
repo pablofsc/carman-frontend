@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../models/event.dart';
-import '../services/events_service.dart';
+import 'package:carman/models/event.dart';
+import 'package:carman/provider/events_provider.dart';
 
-class DeleteEventDialog extends StatefulWidget {
+class DeleteEventDialog extends riverpod.ConsumerStatefulWidget {
   final Event event;
 
   const DeleteEventDialog({super.key, required this.event});
@@ -16,18 +17,20 @@ class DeleteEventDialog extends StatefulWidget {
   }
 
   @override
-  State<DeleteEventDialog> createState() => _DeleteEventDialogState();
+  riverpod.ConsumerState<DeleteEventDialog> createState() =>
+      _DeleteEventDialogState();
 }
 
-class _DeleteEventDialogState extends State<DeleteEventDialog> {
-  final EventsService _eventsService = EventsService();
+class _DeleteEventDialogState
+    extends riverpod.ConsumerState<DeleteEventDialog> {
+  
   bool _isDeleting = false;
 
   Future<void> _deleteEvent() async {
     setState(() => _isDeleting = true);
 
     try {
-      await _eventsService.deleteEvent(widget.event.id);
+      await ref.read(eventsProvider.notifier).deleteEvent(widget.event.id);
 
       if (mounted) {
         Navigator.pop(context, true);
