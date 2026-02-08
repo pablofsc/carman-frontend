@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../models/vehicle.dart';
-import '../services/selected_vehicle_service.dart';
+import 'package:carman/provider/selected_vehicle_provider.dart';
 
-class VehicleInformation extends StatefulWidget {
+class VehicleInformation extends riverpod.ConsumerWidget {
   const VehicleInformation({super.key});
 
   @override
-  State<VehicleInformation> createState() => _VehicleInformationState();
-}
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    final selectedVehicleAsync = ref.watch(selectedVehicleProvider);
 
-class _VehicleInformationState extends State<VehicleInformation> {
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<Vehicle?>(
-      valueListenable: SelectedVehicleService().selVehNotifier,
-      builder: (context, selectedVehicle, child) {
-        final vehicle = selectedVehicle;
-
+    return selectedVehicleAsync.when(
+      data: (vehicle) {
         if (vehicle == null) {
           return Card(
             margin: const EdgeInsets.all(16.0),
@@ -82,6 +76,25 @@ class _VehicleInformationState extends State<VehicleInformation> {
           ),
         );
       },
+      loading: () => Card(
+        margin: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
+      error: (error, stack) => Card(
+        margin: const EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Text(
+              'No vehicle selected',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

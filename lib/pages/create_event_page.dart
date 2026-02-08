@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../services/events_service.dart';
-import '../services/selected_vehicle_service.dart';
+import 'package:carman/provider/selected_vehicle_provider.dart';
+import 'package:carman/services/events_service.dart';
 
-class CreateEventPage extends StatefulWidget {
+class CreateEventPage extends riverpod.ConsumerStatefulWidget {
   const CreateEventPage({super.key});
 
   @override
-  State<CreateEventPage> createState() => _CreateEventPageState();
+  riverpod.ConsumerState<CreateEventPage> createState() =>
+      _CreateEventPageState();
 }
 
-class _CreateEventPageState extends State<CreateEventPage> {
+class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedType;
   final _descriptionController = TextEditingController();
@@ -42,7 +44,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
       return;
     }
 
-    final selectedVehicle = SelectedVehicleService().selectedVehicle;
+    final selectedVehicle = ref.watch(selectedVehicleProvider).asData?.value;
+
     if (selectedVehicle == null) {
       setState(() {
         _errorMessage = 'No vehicle selected';
@@ -80,7 +83,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedVehicle = SelectedVehicleService().selectedVehicle;
+    final selectedVehicle = ref.watch(selectedVehicleProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Create Event')),

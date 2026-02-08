@@ -93,4 +93,38 @@ class VehicleRepository {
 
     throw Exception('Failed to delete vehicle: ${response.statusCode}');
   }
+
+  static Future<Vehicle?> getSelected() async {
+    // TODO: maybe move this to a "UserRepository"?
+
+    final response = await ApiClient.get(
+      '/users/selected-vehicle',
+      headers: await _authService.getAuthHeaders(),
+    );
+
+    if (response.statusCode == 200) {
+      return Vehicle.fromResponseBody(response.body);
+    }
+
+    if (response.statusCode == 204) {
+      throw Exception('No selected vehicle');
+    }
+
+    throw Exception('Failed to fetch selected vehicle: ${response.statusCode}');
+  }
+
+  static Future<void> setSelected(String id) async {
+    final response = await ApiClient.put(
+      '/users/selected-vehicle?id=$id',
+      headers: await _authService.getAuthHeaders(),
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    }
+
+    throw Exception(
+      'Failed to update selected vehicle: ${response.statusCode}',
+    );
+  }
 }

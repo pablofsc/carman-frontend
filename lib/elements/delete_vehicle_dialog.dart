@@ -1,9 +1,9 @@
-import 'package:carman/provider/vehicles_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../models/vehicle.dart';
-import '../services/selected_vehicle_service.dart';
+import 'package:carman/provider/selected_vehicle_provider.dart';
+import 'package:carman/provider/vehicles_provider.dart';
+import 'package:carman/models/vehicle.dart';
 
 class DeleteVehicleDialog extends riverpod.ConsumerStatefulWidget {
   final Vehicle vehicle;
@@ -25,11 +25,12 @@ class DeleteVehicleDialog extends riverpod.ConsumerStatefulWidget {
 class _DeleteVehicleDialogState
     extends riverpod.ConsumerState<DeleteVehicleDialog> {
       
-  final SelectedVehicleService _selVehService = SelectedVehicleService();
   bool _isDeleting = false;
 
   Future<void> _performDelete() async {
     await ref.read(vehiclesProvider.notifier).remove(widget.vehicle.id);
+
+    ref.invalidate(selectedVehicleProvider);
   }
 
   Future<void> _deleteVehicle() async {
@@ -37,8 +38,6 @@ class _DeleteVehicleDialogState
 
     try {
       await _performDelete();
-
-      await _selVehService.fetchSelectedVehicle();
 
       if (mounted) {
         Navigator.pop(context, true);
