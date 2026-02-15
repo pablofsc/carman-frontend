@@ -3,36 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/pages/home_page.dart';
 import 'package:carman/pages/login_page.dart';
-import 'package:carman/services/auth_service.dart';
+import 'package:carman/provider/auth_provider.dart';
 
 void main() {
   runApp(const riverpod.ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends riverpod.ConsumerWidget {
   const MyApp({super.key});
 
-  FutureBuilder _decideRootPage() {
-    return FutureBuilder(
-      future: AuthService().getCurrentUser(),
-      builder: (bc, as) {
-        if (as.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+  Widget _decideRootPage(riverpod.WidgetRef ref) {
+    final auth = ref.watch(authProvider);
 
-        if (as.data != null) {
-          return const HomePage();
-        }
-
-        return const LoginPage();
-      },
+    return auth.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
+      data: (user) => user == null ? const LoginPage() : const HomePage(),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
     return MaterialApp(
       title: 'Carman',
       theme: ThemeData(
@@ -41,7 +33,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => _decideRootPage(),
+        '/': (context) => _decideRootPage(ref),
         '/home': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
       },

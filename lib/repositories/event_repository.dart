@@ -1,21 +1,21 @@
 import 'dart:convert' as convert;
 
-import '../clients/api_client.dart';
-import '../models/event.dart';
-import '../services/auth_service.dart';
+import 'package:carman/clients/api_client.dart';
+import 'package:carman/models/event.dart';
 
 class EventRepository {
-  static final AuthService _authService = AuthService();
-
   static List<Event> _parseEvents(String body) {
     final List<dynamic> data = convert.jsonDecode(body);
     return data.map((json) => Event.fromJson(json)).toList();
   }
 
-  static Future<List<Event>> getEventsByVehicle(String vehicleId) async {
+  static Future<List<Event>> getEventsByVehicle(
+    String vehicleId,
+    Map<String, String> headers,
+  ) async {
     final response = await ApiClient.get(
       '/events?vehicle=$vehicleId',
-      headers: await _authService.getAuthHeaders(),
+      headers: headers,
     );
 
     if (response.statusCode == 200) {
@@ -25,10 +25,13 @@ class EventRepository {
     throw Exception('Failed to fetch events: ${response.statusCode}');
   }
 
-  static Future<Event> getEventById(String id) async {
+  static Future<Event> getEventById(
+    String id,
+    Map<String, String> headers,
+  ) async {
     final response = await ApiClient.get(
       '/events/$id',
-      headers: await _authService.getAuthHeaders(),
+      headers: headers,
     );
 
     if (response.statusCode == 200) {
@@ -47,6 +50,7 @@ class EventRepository {
     required String type,
     String? description,
     double? odometer,
+    required Map<String, String> headers,
   }) async {
     final body = convert.jsonEncode({
       'vehicle': {'id': vehicleId},
@@ -57,7 +61,7 @@ class EventRepository {
 
     final response = await ApiClient.post(
       '/events',
-      headers: await _authService.getAuthHeaders(),
+      headers: headers,
       body: body,
     );
 
@@ -68,10 +72,13 @@ class EventRepository {
     throw Exception('Failed to create event: ${response.statusCode}');
   }
 
-  static Future<void> deleteEvent(String id) async {
+  static Future<void> deleteEvent(
+    String id,
+    Map<String, String> headers,
+  ) async {
     final response = await ApiClient.delete(
       '/events/$id',
-      headers: await _authService.getAuthHeaders(),
+      headers: headers,
     );
 
     if (response.statusCode == 204) {

@@ -1,7 +1,8 @@
-import 'package:carman/models/vehicle.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../repositories/vehicle_repository.dart';
+import 'package:carman/models/vehicle.dart';
+import 'package:carman/provider/auth_provider.dart';
+import 'package:carman/repositories/vehicle_repository.dart';
 
 final vehiclesProvider =
     riverpod.AsyncNotifierProvider<VehiclesNotifier, List<Vehicle>>(
@@ -11,7 +12,9 @@ final vehiclesProvider =
 class VehiclesNotifier extends riverpod.AsyncNotifier<List<Vehicle>> {
   @override
   Future<List<Vehicle>> build() async {
-    return VehicleRepository.getAllVehicles();
+    return VehicleRepository.getAllVehicles(
+      await ref.read(authProvider.notifier).getHeaders(),
+    );
   }
 
   Future<void> create({
@@ -25,13 +28,17 @@ class VehiclesNotifier extends riverpod.AsyncNotifier<List<Vehicle>> {
       make: make,
       model: model,
       year: year,
+      headers: await ref.read(authProvider.notifier).getHeaders(),
     );
 
     ref.invalidateSelf();
   }
 
   Future<void> remove(String id) async {
-    await VehicleRepository.deleteVehicle(id);
+    await VehicleRepository.deleteVehicle(
+      id,
+      await ref.read(authProvider.notifier).getHeaders(),
+    );
 
     ref.invalidateSelf();
   }

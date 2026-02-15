@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../models/login_response.dart';
-import '../services/auth_service.dart';
+import 'package:carman/provider/auth_provider.dart';
 
-class UserPage extends StatefulWidget {
+class UserPage extends riverpod.ConsumerStatefulWidget {
   const UserPage({super.key});
 
   @override
-  State<UserPage> createState() => _UserPageState();
+  riverpod.ConsumerState<UserPage> createState() => _UserPageState();
 }
 
-class _UserPageState extends State<UserPage> {
-  late Future<LoginResponse?> _userFuture;
-  final _authService = AuthService();
-
-  @override
-  void initState() {
-    super.initState();
-    _userFuture = _authService.getCurrentUser();
-  }
+class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Info'),
@@ -30,7 +24,7 @@ class _UserPageState extends State<UserPage> {
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
             onPressed: () async {
-              await _authService.logout();
+              await ref.read(authProvider.notifier).logout();
 
               if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/');
@@ -39,18 +33,13 @@ class _UserPageState extends State<UserPage> {
           ),
         ],
       ),
-      body: FutureBuilder<LoginResponse?>(
-        future: _userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data == null) {
+      body: authState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+        data: (user) {
+          if (user == null) {
             return const Center(child: Text('No user data found'));
           }
-
-          final user = snapshot.data!;
 
           final expiryTime = user.generatedAt.add(
             Duration(seconds: user.expiresIn),

@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../services/auth_service.dart';
+import 'package:carman/provider/auth_provider.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends riverpod.ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  riverpod.ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final _authService = AuthService();
-
+class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
-
-  bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -30,35 +26,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      try {
-        final response = await _authService.register(
-          _usernameController.text.trim(),
-          _password1Controller.text,
-        );
-
-        if (!mounted) return;
-
-        if (response != null) {
-          setState(() => _isLoading = false);
-          Navigator.pushReplacementNamed(context, '/');
-        } else {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = 'Could not create account';
-          });
-        }
-      } catch (e) {
-        if (!mounted) return;
-        setState(() {
-          _isLoading = false;
-          _errorMessage = e.toString();
-        });
-      }
+      await ref
+          .read(authProvider.notifier)
+          .register(_usernameController.text.trim(), _password1Controller.text);
     }
   }
 
@@ -94,6 +64,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      final previousValue = previous?.value;
+      final nextValue = next.value;
+
+      if (previousValue == null && nextValue != null && mounted) {
+        Navigator.pushReplacementNamed(context, '/');
+      }
+    });
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -123,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 48),
 
                     // Error Message
-                    if (_errorMessage != null)
+                    if (authState.hasError)
                       Container(
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.only(bottom: 16),
@@ -141,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _errorMessage!,
+                                authState.error.toString(),
                                 style: TextStyle(
                                   color: colorScheme.onErrorContainer,
                                 ),
@@ -206,14 +187,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Register Button
                     FilledButton(
-                      onPressed: _isLoading ? null : _handleRegister,
+                      onPressed: authState.isLoading ? null : _handleRegister,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: _isLoading
+                      child: authState.isLoading
                           ? SizedBox(
                               height: 20,
                               width: 20,

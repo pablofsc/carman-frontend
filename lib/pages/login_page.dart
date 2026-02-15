@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../services/auth_service.dart';
+import 'package:carman/provider/auth_provider.dart';
 import 'package:carman/pages/register_page.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends riverpod.ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  riverpod.ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final _authService = AuthService();
-  
+class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
@@ -29,37 +25,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      try {
-        final response = await _authService.login(
-          _usernameController.text.trim(),
-          _passwordController.text,
-        );
-
-        if (!mounted) return;
-
-        if (response != null) {
-          if (!mounted) return;
-          
-          setState(() => _isLoading = false);
-          Navigator.pushReplacementNamed(context, '/');
-        } else {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = 'Invalid username or password';
-          });
-        }
-      } catch (e) {
-        if (!mounted) return;
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Unable to connect to server. Please try again.';
-        });
-      }
+      await ref
+          .read(authProvider.notifier)
+          .login(_usernameController.text.trim(), _passwordController.text);
     }
   }
 
@@ -82,6 +50,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -124,8 +94,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 48),
 
                     // Error Message
-                    if (_errorMessage != null)
-                      Container(
+                    authState.when(
+                      data: (_) => const SizedBox.shrink(),
+                      loading: () => const SizedBox.shrink(),
+                      error: (error, _) => Container(
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
@@ -142,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                _errorMessage!,
+                                error.toString(),
                                 style: TextStyle(
                                   color: colorScheme.onErrorContainer,
                                 ),
@@ -151,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
+                    ),
 
                     // Username Field
                     TextFormField(
@@ -190,26 +163,35 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
                     // Login Button
                     FilledButton(
-                      onPressed: _isLoading ? null : _handleLogin,
+                      onPressed: authState.when(
+                        data: (_) => _handleLogin,
+                        loading: () => null,
+                        error: (e, st) => _handleLogin,
+                      ),
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: _isLoading
-                          ? SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colorScheme.onPrimary,
-                              ),
-                            )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                      child: authState.when(
+                        data: (_) => const Text(
+                          'Sign In',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        loading: () => SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colorScheme.onPrimary,
+                          ),
+                        ),
+                        error: (e, st) => const Text(
+                          'Sign In',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     Wrap(
