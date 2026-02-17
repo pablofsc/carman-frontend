@@ -4,8 +4,8 @@ import 'dart:convert' as convert;
 import 'package:carman/clients/api_client.dart';
 import 'package:carman/models/login_request.dart';
 import 'package:carman/models/login_response.dart';
-import 'package:carman/provider/events_provider.dart';
-import 'package:carman/provider/vehicles_provider.dart';
+import 'package:carman/providers/events_provider.dart';
+import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/services/storage_service.dart';
 
 final authProvider =

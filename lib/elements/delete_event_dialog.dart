@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/models/event.dart';
-import 'package:carman/provider/events_provider.dart';
+import 'package:carman/providers/events_provider.dart';
 
 class DeleteEventDialog extends riverpod.ConsumerStatefulWidget {
   final Event event;

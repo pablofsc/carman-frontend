@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_event_dialog.dart';
 import 'package:carman/models/event.dart';
-import 'package:carman/provider/events_provider.dart';
+import 'package:carman/providers/events_provider.dart';
 import 'package:carman/pages/create_event_page.dart';
 
 class EventsPage extends riverpod.ConsumerWidget {

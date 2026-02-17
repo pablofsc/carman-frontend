@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/pages/home_page.dart';
 import 'package:carman/pages/login_page.dart';
-import 'package:carman/provider/auth_provider.dart';
+import 'package:carman/providers/auth_provider.dart';
 
 void main() {
   runApp(const riverpod.ProviderScope(child: MyApp()));

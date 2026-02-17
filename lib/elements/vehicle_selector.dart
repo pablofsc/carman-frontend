@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_vehicle_dialog.dart';
 import 'package:carman/elements/create_vehicle_dialog.dart';
-import 'package:carman/provider/vehicles_provider.dart';
-import 'package:carman/provider/selected_vehicle_provider.dart';
+import 'package:carman/providers/vehicles_provider.dart';
+import 'package:carman/providers/selected_vehicle_provider.dart';
 
 class VehicleSelector extends riverpod.ConsumerStatefulWidget {
   const VehicleSelector({super.key});

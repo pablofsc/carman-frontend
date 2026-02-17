@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/provider/selected_vehicle_provider.dart';
-import 'package:carman/provider/auth_provider.dart';
+import 'package:carman/providers/selected_vehicle_provider.dart';
+import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/repositories/event_repository.dart';
 import 'package:carman/models/event.dart';
 
@@ -35,7 +35,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
       type: type,
       description: description,
       odometer: odometer,
-      headers: await ref.read(authProvider.notifier).getHeaders()
+      headers: await ref.read(authProvider.notifier).getHeaders(),
     );
 
     ref.invalidateSelf();

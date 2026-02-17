@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/provider/auth_provider.dart';
+import 'package:carman/providers/auth_provider.dart';
 
 class RegisterPage extends riverpod.ConsumerStatefulWidget {
   const RegisterPage({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/provider/selected_vehicle_provider.dart';
+import 'package:carman/providers/selected_vehicle_provider.dart';
 
 class VehicleInformation extends riverpod.ConsumerWidget {
   const VehicleInformation({super.key});

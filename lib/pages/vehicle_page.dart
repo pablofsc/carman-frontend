@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import '../elements/vehicle_information.dart';
 import '../elements/create_vehicle_dialog.dart';
-import 'package:carman/provider/vehicles_provider.dart';
+import 'package:carman/providers/vehicles_provider.dart';
 
 class VehiclePage extends riverpod.ConsumerStatefulWidget {
   const VehiclePage({super.key});
