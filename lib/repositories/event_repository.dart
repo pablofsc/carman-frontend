@@ -1,6 +1,6 @@
 import 'dart:convert' as convert;
 
-import 'package:carman/clients/api_client.dart';
+import 'package:carman/adapters/api_client.dart';
 import 'package:carman/models/event.dart';
 
 class EventRepository {

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'dart:convert' as convert;
 
-import 'package:carman/clients/api_client.dart';
+import 'package:carman/adapters/api_client.dart';
 import 'package:carman/models/login_request.dart';
 import 'package:carman/models/login_response.dart';
 import 'package:carman/providers/events_provider.dart';
