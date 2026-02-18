@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/events_provider.dart';
+
+// TODO: improve this, maybe use a money input library?
+class _DecimalInputFormatter extends services.TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) return newValue;
+
+    final pattern = RegExp(r'^\d+\.?\d{0,2}$');
+    if (pattern.hasMatch(newValue.text) || newValue.text == '.') {
+      return newValue;
+    }
+
+    return oldValue;
+  }
+}
 
 class CreateEventPage extends riverpod.ConsumerStatefulWidget {
   const CreateEventPage({super.key});
@@ -17,6 +36,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   String? _selectedType;
   final _descriptionController = TextEditingController();
   final _odometerController = TextEditingController();
+  final _costValueController = TextEditingController();
+  final _currencyCodeController = TextEditingController();
 
   bool _isSubmitting = false;
   String? _errorMessage;
@@ -33,9 +54,17 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _currencyCodeController.text = 'BRL';
+  }
+
+  @override
   void dispose() {
     _descriptionController.dispose();
     _odometerController.dispose();
+    _costValueController.dispose();
+    _currencyCodeController.dispose();
     super.dispose();
   }
 
@@ -70,6 +99,13 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
             odometer: _odometerController.text.isEmpty
                 ? null
                 : double.tryParse(_odometerController.text),
+            costValueMinor: _costValueController.text.isEmpty
+                ? null
+                : ((double.tryParse(_costValueController.text) ?? 0) * 100)
+                      .toInt(),
+            costCurrencyCode: _currencyCodeController.text.isEmpty
+                ? null
+                : _currencyCodeController.text,
           );
 
       if (mounted) {
@@ -149,6 +185,36 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _currencyCodeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Currency Code (ISO 4217)',
+                      border: OutlineInputBorder(),
+                      counterText: '',
+                    ),
+                    maxLength: 3,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: _costValueController,
+                    decoration: const InputDecoration(
+                      labelText: 'Amount (optional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [_DecimalInputFormatter()],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             if (_errorMessage != null)

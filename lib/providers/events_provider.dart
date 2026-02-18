@@ -29,12 +29,16 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
     required String type,
     String? description,
     double? odometer,
+    int? costValueMinor,
+    String? costCurrencyCode,
   }) async {
     await EventRepository.createEvent(
       vehicleId: vehicleId,
       type: type,
       description: description,
       odometer: odometer,
+      costValueMinor: costValueMinor,
+      costCurrencyCode: costCurrencyCode,
       headers: await ref.read(authProvider.notifier).getHeaders(),
     );
 

@@ -10,6 +10,8 @@ class Event {
   final String? type;
   final String? description;
   final double? odometer;
+  final int? costValueMinor;
+  final String? costCurrencyCode;
 
   Event({
     required this.id,
@@ -20,6 +22,8 @@ class Event {
     this.type,
     this.description,
     this.odometer,
+    this.costValueMinor,
+    this.costCurrencyCode,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -34,6 +38,8 @@ class Event {
       type: json['type'],
       description: json['description'],
       odometer: json['odometer']?.toDouble(),
+      costValueMinor: json['costValueMinor'],
+      costCurrencyCode: json['costCurrencyCode'],
     );
   }
 
@@ -47,6 +53,8 @@ class Event {
       'type': type,
       'description': description,
       'odometer': odometer,
+      'costValueMinor': costValueMinor,
+      'costCurrencyCode': costCurrencyCode,
     };
   }
 }

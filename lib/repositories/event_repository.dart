@@ -50,6 +50,8 @@ class EventRepository {
     required String type,
     String? description,
     double? odometer,
+    int? costValueMinor,
+    String? costCurrencyCode,
     required Map<String, String> headers,
   }) async {
     final body = convert.jsonEncode({
@@ -57,6 +59,8 @@ class EventRepository {
       'type': type,
       'description': description,
       'odometer': odometer,
+      'costValueMinor': costValueMinor,
+      'costCurrencyCode': costCurrencyCode,
     });
 
     final response = await ApiClient.post(

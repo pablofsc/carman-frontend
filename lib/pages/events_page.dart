@@ -153,24 +153,34 @@ class _EventListItem extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  event.createdAt.toString(),
+                  // TODO: improve this atrocity
+                  '${event.createdAt.year}-${event.createdAt.month.toString().padLeft(2, '0')}-${event.createdAt.day.toString().padLeft(2, '0')} ${event.createdAt.hour.toString().padLeft(2, '0')}:${event.createdAt.minute.toString().padLeft(2, '0')}:${event.createdAt.second.toString().padLeft(2, '0')}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
           ],
         ),
-        trailing: event.odometer != null
+        trailing: event.odometer != null || event.costValueMinor != null
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    '${event.odometer!.toStringAsFixed(0)} km',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  if (event.odometer != null)
+                    Text(
+                      '${event.odometer!.toStringAsFixed(0)} km',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  if (event.costValueMinor != null &&
+                      event.costCurrencyCode != null)
+                    Text(
+                      '${(event.costValueMinor! / 100).toStringAsFixed(2)} ${event.costCurrencyCode}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               )
             : null,
