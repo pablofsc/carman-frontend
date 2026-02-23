@@ -26,7 +26,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     return LoginResponse.fromJson(convert.jsonDecode(jsonData));
   }
 
-  Future<void> login(String username, String password) async {
+  Future<bool> login(String username, String password) async {
     state = const riverpod.AsyncValue.loading();
 
     state = await riverpod.AsyncValue.guard(() async {
@@ -37,9 +37,11 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     });
 
     if (state.value != null) _invalidateUserProviders();
+
+    return !state.hasError;
   }
 
-  Future<void> register(String username, String password) async {
+  Future<bool> register(String username, String password) async {
     state = const riverpod.AsyncValue.loading();
 
     state = await riverpod.AsyncValue.guard(() async {
@@ -50,6 +52,8 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     });
 
     if (state.value != null) _invalidateUserProviders();
+
+    return !state.hasError;
   }
 
   Future<void> logout() async {

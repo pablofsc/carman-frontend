@@ -25,10 +25,30 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      await ref
+      final success = await ref
           .read(authProvider.notifier)
           .login(_usernameController.text.trim(), _passwordController.text);
+
+      if (!success && mounted) {
+        _showLoginErrorDialog(ref.read(authProvider).error.toString());
+      }
     }
+  }
+
+  void _showLoginErrorDialog(String message) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Sign in failed'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   String? _validateUsername(String? value) {
@@ -93,38 +113,6 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                     ),
                     const SizedBox(height: 48),
 
-                    // Error Message
-                    authState.when(
-                      data: (_) => const SizedBox.shrink(),
-                      loading: () => const SizedBox.shrink(),
-                      error: (error, _) => Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: colorScheme.error,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                error.toString(),
-                                style: TextStyle(
-                                  color: colorScheme.onErrorContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
                     // Username Field
                     TextFormField(
                       controller: _usernameController,
@@ -161,13 +149,10 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                       validator: _validatePassword,
                     ),
                     const SizedBox(height: 24),
+                    
                     // Login Button
                     FilledButton(
-                      onPressed: authState.when(
-                        data: (_) => _handleLogin,
-                        loading: () => null,
-                        error: (e, st) => _handleLogin,
-                      ),
+                      onPressed: authState.isLoading ? null : _handleLogin,
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -180,7 +165,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                           style: TextStyle(fontSize: 16),
                         ),
                         loading: () => SizedBox(
-                          height: 20,
+                          height: 23,
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,

@@ -15,11 +15,9 @@ class MyApp extends riverpod.ConsumerWidget {
   Widget _decideRootPage(riverpod.WidgetRef ref) {
     final auth = ref.watch(authProvider);
 
-    return auth.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
+    return auth.maybeWhen(
       data: (user) => user == null ? const LoginPage() : const HomePage(),
+      orElse: () => const LoginPage(),
     );
   }
 
