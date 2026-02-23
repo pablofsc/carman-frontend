@@ -26,10 +26,34 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      await ref
+      final success = await ref
           .read(authProvider.notifier)
           .register(_usernameController.text.trim(), _password1Controller.text);
+
+      if (!mounted) return;
+
+      if (success) {
+        Navigator.pop(context);
+      } else {
+        _showRegisterErrorDialog(ref.read(authProvider).error.toString());
+      }
     }
+  }
+
+  void _showRegisterErrorDialog(String message) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Registration failed'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   String? _validateUsername(String? value) {
@@ -66,18 +90,6 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    ref.listen(authProvider, (previous, next) {
-      final previousValue = previous?.value;
-      final nextValue = next.value;
-
-      if (previousValue == null && nextValue != null && mounted) {
-        Navigator.pushReplacementNamed(context, '/');
-      }
-    });
-
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Create Account')),
       body: SafeArea(
@@ -95,42 +107,11 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                     // Title
                     Text(
                       'Create your Carman account',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
-
-                    // Error Message
-                    if (authState.hasError)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: colorScheme.error,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                authState.error.toString(),
-                                style: TextStyle(
-                                  color: colorScheme.onErrorContainer,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
 
                     // Username Field
                     TextFormField(
@@ -196,11 +177,11 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                       ),
                       child: authState.isLoading
                           ? SizedBox(
-                              height: 20,
+                              height: 23,
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: colorScheme.onPrimary,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               ),
                             )
                           : const Text(
