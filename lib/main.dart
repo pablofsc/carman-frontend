@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:carman/pages/home_page.dart';
 import 'package:carman/pages/login_page.dart';
 import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/localization/app_localizations.dart';
 
 void main() {
   runApp(const riverpod.ProviderScope(child: MyApp()));
@@ -25,6 +26,8 @@ class MyApp extends riverpod.ConsumerWidget {
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     return MaterialApp(
       title: 'Carman',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: .fromSeed(seedColor: Colors.indigo),

@@ -1,0 +1,16 @@
+{
+  "@@locale": "en",
+
+  "welcomeToApp": "Welcome to Carman",
+  "signInToContinue": "Sign in to continue",
+  "username": "Username",
+  "enterUsername": "Enter your username",
+  "password": "Password",
+  "enterPassword": "Enter your password",
+  "noAccountQuestion": "Don't have an account?",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "signInFailed": "Sign in failed",
+  "ok": "OK",
+  "passwordMustBeMinLength": "Password must be at least 6 characters"
+}
