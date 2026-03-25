@@ -20,7 +20,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
 
   @override
   Future<LoginResponse?> build() async {
-    final jsonData = await StorageService.read('login_response');
+    final jsonData = await StorageAdapter.read('login_response');
     if (jsonData == null) return null;
 
     return LoginResponse.fromJson(convert.jsonDecode(jsonData));
@@ -57,7 +57,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
   }
 
   Future<void> logout() async {
-    await StorageService.clear('login_response');
+    await StorageAdapter.clear('login_response');
 
     state = const riverpod.AsyncValue.data(null);
   }
@@ -174,7 +174,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
   }
 
   Future<void> _persist(LoginResponse response) async {
-    await StorageService.write(
+    await StorageAdapter.write(
       'login_response',
       convert.jsonEncode(response.toJson()),
     );

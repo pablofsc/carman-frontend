@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:web/web.dart' as web;
 
-class StorageService {
+class StorageAdapter {
   // For non-web platforms (Android, iOS, macOS, Linux, Windows)
   static Future<void> write(String name, String value) async {
     if (foundation.kIsWeb) {
