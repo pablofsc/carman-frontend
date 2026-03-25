@@ -5,6 +5,12 @@ import 'package:carman/adapters/storage_adapter.dart';
 
 const _storageKey = 'selected_locale';
 
+// can't use AppLocalizations' supported locales list because it doesn't have the display names
+const Map<String, String> supportedLocaleNames = {
+  'en': 'English',
+  'pt': 'Português',
+};
+
 final localeProvider = riverpod.NotifierProvider<LocaleNotifier, Locale>(
   LocaleNotifier.new,
 );

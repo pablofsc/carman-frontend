@@ -64,16 +64,12 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                     trailing: DropdownButton<Locale>(
                       value: ref.watch(localeProvider),
                       underline: const SizedBox.shrink(),
-                      items: const [
-                        DropdownMenuItem(
-                          value: Locale('en'),
-                          child: Text('English'),
-                        ),
-                        DropdownMenuItem(
-                          value: Locale('pt'),
-                          child: Text('Português'),
-                        ),
-                      ],
+                      items: supportedLocaleNames.entries.map((e) =>
+                            DropdownMenuItem(
+                              value: Locale(e.key),
+                              child: Text(e.value),
+                            ),
+                          ).toList(),
                       onChanged: (locale) {
                         if (locale != null) {
                           ref.read(localeProvider.notifier).setLocale(locale);
