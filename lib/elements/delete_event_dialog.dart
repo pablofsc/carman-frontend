@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/models/event.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class DeleteEventDialog extends riverpod.ConsumerStatefulWidget {
   final Event event;
@@ -36,14 +37,18 @@ class _DeleteEventDialogState
         Navigator.pop(context, true);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Event deleted successfully')));
+        ).showSnackBar(
+          SnackBar(content: Text(context.l10n.eventDeletedSuccessfully)),
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isDeleting = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to delete event: $e')));
+        ).showSnackBar(
+          SnackBar(content: Text('${context.l10n.failedToDeleteEvent}: $e')),
+        );
       }
     }
   }
@@ -51,14 +56,14 @@ class _DeleteEventDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Delete Event'),
+      title: Text(context.l10n.deleteEvent),
       content: Text(
-        'Are you sure you want to delete this ${widget.event.type ?? "event"}?',
+        '${context.l10n.deleteEventConfirm} ${widget.event.type ?? context.l10n.event}?',
       ),
       actions: [
         TextButton(
           onPressed: _isDeleting ? null : () => Navigator.pop(context, false),
-          child: Text('Cancel'),
+          child: Text(context.l10n.cancel),
         ),
         TextButton(
           onPressed: _isDeleting ? null : _deleteEvent,
@@ -68,7 +73,7 @@ class _DeleteEventDialogState
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text('Delete', style: TextStyle(color: Colors.red)),
+              : Text(context.l10n.delete, style: TextStyle(color: Colors.red)),
         ),
       ],
     );

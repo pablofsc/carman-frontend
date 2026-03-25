@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/models/vehicle.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class DeleteVehicleDialog extends riverpod.ConsumerStatefulWidget {
   final Vehicle vehicle;
@@ -43,14 +44,18 @@ class _DeleteVehicleDialogState
         Navigator.pop(context, true);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Vehicle deleted successfully')));
+        ).showSnackBar(
+          SnackBar(content: Text(context.l10n.vehicleDeletedSuccessfully)),
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isDeleting = false);
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to delete vehicle: $e')));
+        ).showSnackBar(
+          SnackBar(content: Text('${context.l10n.failedToDeleteVehicle}: $e')),
+        );
       }
     }
   }
@@ -58,14 +63,14 @@ class _DeleteVehicleDialogState
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Delete Vehicle'),
+      title: Text(context.l10n.deleteVehicle),
       content: Text(
-        'Are you sure you want to delete ${widget.vehicle.displayName}?',
+        '${context.l10n.deleteVehicleConfirm} ${widget.vehicle.displayName}?',
       ),
       actions: [
         TextButton(
           onPressed: _isDeleting ? null : () => Navigator.pop(context, false),
-          child: Text('Cancel'),
+          child: Text(context.l10n.cancel),
         ),
         TextButton(
           onPressed: _isDeleting ? null : _deleteVehicle,
@@ -75,7 +80,7 @@ class _DeleteVehicleDialogState
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text('Delete', style: TextStyle(color: Colors.red)),
+              : Text(context.l10n.delete, style: TextStyle(color: Colors.red)),
         ),
       ],
     );

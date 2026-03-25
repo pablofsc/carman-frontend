@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/selected_vehicle_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class VehicleInformation extends riverpod.ConsumerWidget {
   const VehicleInformation({super.key});
@@ -19,7 +20,7 @@ class VehicleInformation extends riverpod.ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: Center(
                 child: Text(
-                  'No vehicle selected',
+                  context.l10n.noVehicleSelected,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
@@ -64,13 +65,13 @@ class VehicleInformation extends riverpod.ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                _InfoRow(label: 'Make', value: vehicle.make),
+                _InfoRow(label: context.l10n.make, value: vehicle.make),
                 const SizedBox(height: 12),
-                _InfoRow(label: 'Model', value: vehicle.model),
+                _InfoRow(label: context.l10n.model, value: vehicle.model),
                 const SizedBox(height: 12),
-                _InfoRow(label: 'Type', value: vehicle.type),
+                _InfoRow(label: context.l10n.type, value: vehicle.type),
                 const SizedBox(height: 12),
-                _InfoRow(label: 'ID', value: vehicle.id),
+                _InfoRow(label: context.l10n.vehicleId, value: vehicle.id),
               ],
             ),
           ),
@@ -89,7 +90,7 @@ class VehicleInformation extends riverpod.ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No vehicle selected',
+              context.l10n.noVehicleSelected,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),

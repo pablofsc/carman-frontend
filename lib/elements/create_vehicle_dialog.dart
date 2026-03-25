@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../models/vehicle.dart';
+import 'package:carman/models/vehicle.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 
 const List<String> vehicleTypes = [
@@ -77,14 +78,14 @@ class _CreateVehicleDialogState
               children: [
                 Icon(Icons.error, color: Colors.red),
                 SizedBox(width: 12),
-                Text('Failed to Create Vehicle'),
+                Text(context.l10n.failedToCreateVehicle),
               ],
             ),
             content: Text(e.toString()),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Close'),
+                child: Text(context.l10n.close),
               ),
             ],
           ),
@@ -104,7 +105,7 @@ class _CreateVehicleDialogState
         children: [
           Icon(Icons.directions_car),
           SizedBox(width: 12),
-          Expanded(child: Text('Add new vehicle')),
+          Expanded(child: Text(context.l10n.addNewVehicle)),
           IconButton(
             icon: Icon(Icons.close),
             onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
@@ -119,7 +120,7 @@ class _CreateVehicleDialogState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Enter the information for your new vehicle',
+                context.l10n.enterVehicleInfo,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               SizedBox(height: 32),
@@ -129,14 +130,16 @@ class _CreateVehicleDialogState
                     child: TextFormField(
                       controller: _makeController,
                       decoration: InputDecoration(
-                        labelText: 'Make',
-                        hintText: 'e.g., Toyota',
+                        labelText: context.l10n.make,
+                        hintText: context.l10n.makeHint,
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.business),
                       ),
                       textCapitalization: TextCapitalization.words,
                       validator: (value) =>
-                          value?.isEmpty ?? true ? 'Make is required' : null,
+                          value?.isEmpty ?? true
+                          ? context.l10n.makeRequired
+                          : null,
                     ),
                   ),
                   SizedBox(width: 16),
@@ -144,14 +147,16 @@ class _CreateVehicleDialogState
                     child: TextFormField(
                       controller: _modelController,
                       decoration: InputDecoration(
-                        labelText: 'Model',
-                        hintText: 'e.g., Corolla',
+                        labelText: context.l10n.model,
+                        hintText: context.l10n.modelHint,
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.drive_eta),
                       ),
                       textCapitalization: TextCapitalization.words,
                       validator: (value) =>
-                          value?.isEmpty ?? true ? 'Model is required' : null,
+                          value?.isEmpty ?? true
+                          ? context.l10n.modelRequired
+                          : null,
                     ),
                   ),
                 ],
@@ -163,7 +168,7 @@ class _CreateVehicleDialogState
                     child: DropdownButtonFormField<String>(
                       initialValue: _selectedType,
                       decoration: InputDecoration(
-                        labelText: 'Type',
+                        labelText: context.l10n.type,
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.category),
                       ),
@@ -179,7 +184,7 @@ class _CreateVehicleDialogState
                         });
                       },
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Vehicle type is required'
+                          ? context.l10n.vehicleTypeRequired
                           : null,
                     ),
                   ),
@@ -188,19 +193,21 @@ class _CreateVehicleDialogState
                     child: TextFormField(
                       controller: _yearController,
                       decoration: InputDecoration(
-                        labelText: 'Model Year',
-                        hintText: 'e.g., 2004',
+                        labelText: context.l10n.modelYear,
+                        hintText: context.l10n.modelYearHint,
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.calendar_today),
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value?.isEmpty ?? true) return 'Year is required';
+                        if (value?.isEmpty ?? true) {
+                          return context.l10n.yearRequired;
+                        }
 
                         final year = int.tryParse(value!);
 
                         if (year == null) {
-                          return 'Please enter a valid year';
+                          return context.l10n.pleaseEnterValidYear;
                         }
 
                         if (year < 1900 || year > DateTime.now().year + 1) {
@@ -219,7 +226,10 @@ class _CreateVehicleDialogState
       ),
       actions: [
         if (!_isLoading)
-          TextButton(onPressed: _createVehicle, child: Text('Create'))
+          TextButton(
+            onPressed: _createVehicle,
+            child: Text(context.l10n.create),
+          )
         else
           SizedBox(
             width: 20,

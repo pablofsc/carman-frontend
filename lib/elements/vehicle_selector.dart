@@ -5,6 +5,7 @@ import 'package:carman/elements/delete_vehicle_dialog.dart';
 import 'package:carman/elements/create_vehicle_dialog.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/providers/selected_vehicle_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class VehicleSelector extends riverpod.ConsumerStatefulWidget {
   const VehicleSelector({super.key});
@@ -42,7 +43,7 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Text(
-                          'Select a Vehicle',
+                          context.l10n.selectVehicle,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
@@ -95,7 +96,7 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
                             ).colorScheme.surfaceContainer,
                           ),
                           onPressed: () => CreateVehicleDialog.show(context),
-                          child: const Text('Add new vehicle'),
+                          child: Text(context.l10n.addNewVehicle),
                         ),
                       ),
                     ],
@@ -125,10 +126,10 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
             ?.value;
 
         final displayText = vehicles.isEmpty
-            ? 'No vehicles available'
+            ? context.l10n.noVehiclesAvailable
             : selectedVehicle != null
             ? selectedVehicle.displayName.toUpperCase()
-            : 'Select a vehicle';
+            : context.l10n.selectVehicle;
 
         return TextButton(
           onPressed: vehicles.isEmpty
