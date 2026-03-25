@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/providers/locale_provider.dart';
 import 'package:carman/pages/register_page.dart';
 
 class LoginPage extends riverpod.ConsumerStatefulWidget {
@@ -202,6 +203,37 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                             ),
                           ),
                           child: Text(context.l10n.signUp),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.language,
+                          size: 18,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 8),
+                        DropdownButton<Locale>(
+                          value: ref.watch(localeProvider),
+                          underline: const SizedBox.shrink(),
+                          items: supportedLocaleNames.entries
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  value: Locale(e.key),
+                                  child: Text(e.value),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (locale) {
+                            if (locale != null) {
+                              ref
+                                  .read(localeProvider.notifier)
+                                  .setLocale(locale);
+                            }
+                          },
                         ),
                       ],
                     ),
