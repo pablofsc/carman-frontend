@@ -211,7 +211,10 @@ class _CreateVehicleDialogState
                         }
 
                         if (year < 1900 || year > DateTime.now().year + 1) {
-                          return 'Must be 1900-${DateTime.now().year + 1}';
+                          return context.l10n.yearMustBeBetween(
+                            '1900',
+                            '${DateTime.now().year + 1}',
+                          );
                         }
 
                         return null;

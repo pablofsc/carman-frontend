@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class RegisterPage extends riverpod.ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -44,12 +45,12 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Registration failed'),
+        title: Text(context.l10n.registrationFailed),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('OK'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -58,7 +59,7 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a valid username';
+      return context.l10n.enterUsername;
     }
 
     return null;
@@ -66,10 +67,10 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
 
   String? _validatePassword1(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your password';
+      return context.l10n.enterPassword;
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return context.l10n.passwordMustBeMinLength;
     }
 
     return null;
@@ -77,10 +78,10 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
 
   String? _validatePassword2(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
+      return context.l10n.confirmPassword;
     }
     if (value != _password1Controller.text) {
-      return 'Passwords do not match';
+      return context.l10n.passwordsDoNotMatch;
     }
 
     return null;
@@ -91,7 +92,7 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(title: Text(context.l10n.createAccount)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -106,7 +107,7 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                   children: [
                     // Title
                     Text(
-                      'Create your Carman account',
+                      context.l10n.createCarmanAccount,
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
@@ -120,8 +121,8 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
                       decoration: InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'Enter your username',
+                        labelText: context.l10n.username,
+                        hintText: context.l10n.enterUsername,
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -137,8 +138,8 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                       obscureText: true,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
+                        labelText: context.l10n.password,
+                        hintText: context.l10n.enterPassword,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -155,8 +156,8 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _handleRegister(),
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        hintText: 'Re-enter your password',
+                        labelText: context.l10n.confirmPassword,
+                        hintText: context.l10n.reEnterPassword,
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -184,9 +185,9 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
                                 color: Theme.of(context).colorScheme.onPrimary,
                               ),
                             )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(fontSize: 16),
+                          : Text(
+                              context.l10n.createAccount,
+                              style: const TextStyle(fontSize: 16),
                             ),
                     ),
                   ],

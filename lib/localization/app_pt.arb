@@ -81,5 +81,12 @@
   "deleteEventConfirm": "Tem certeza que deseja excluir este",
   "event": "evento",
   "eventDeletedSuccessfully": "Evento excluído com sucesso",
-  "failedToDeleteEvent": "Falha ao excluir evento"
+  "failedToDeleteEvent": "Falha ao excluir evento",
+  "registrationFailed": "Falha no cadastro",
+  "confirmPassword": "Confirmar Senha",
+  "reEnterPassword": "Digite a senha novamente",
+  "passwordsDoNotMatch": "As senhas não coincidem",
+  "createAccount": "Criar Conta",
+  "createCarmanAccount": "Crie sua conta no Carman",
+  "yearMustBeBetween": "Deve ser entre {from} e {to}"
 }
