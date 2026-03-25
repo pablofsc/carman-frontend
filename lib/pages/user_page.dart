@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/providers/locale_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 class UserPage extends riverpod.ConsumerStatefulWidget {
   const UserPage({super.key});
@@ -18,11 +20,11 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Info'),
+        title: Text(context.l10n.userInfo),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+            tooltip: context.l10n.logout,
             onPressed: () async {
               await ref.read(authProvider.notifier).logout();
 
@@ -35,10 +37,11 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
       ),
       body: authState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) =>
+            Center(child: Text('${context.l10n.error}: $error')),
         data: (user) {
           if (user == null) {
-            return const Center(child: Text('No user data found'));
+            return Center(child: Text(context.l10n.noUserDataFound));
           }
 
           final expiryTime = user.generatedAt.add(
@@ -52,11 +55,39 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
             padding: const EdgeInsets.all(24.0),
             child: ListView(
               children: [
+                // Language Section
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: Text(context.l10n.language),
+                    leading: const Icon(Icons.language),
+                    trailing: DropdownButton<Locale>(
+                      value: ref.watch(localeProvider),
+                      underline: const SizedBox.shrink(),
+                      items: const [
+                        DropdownMenuItem(
+                          value: Locale('en'),
+                          child: Text('English'),
+                        ),
+                        DropdownMenuItem(
+                          value: Locale('pt'),
+                          child: Text('Português'),
+                        ),
+                      ],
+                      onChanged: (locale) {
+                        if (locale != null) {
+                          ref.read(localeProvider.notifier).setLocale(locale);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+
                 // User Identity Section
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Username'),
+                    title: Text(context.l10n.username),
                     subtitle: Text(user.username),
                     leading: const Icon(Icons.person),
                   ),
@@ -64,7 +95,7 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('User ID'),
+                    title: Text(context.l10n.userId),
                     subtitle: SelectableText(user.userId),
                     leading: const Icon(Icons.badge),
                   ),
@@ -72,17 +103,20 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
                 // Token Timestamps Section
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'Token Timestamps',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    context.l10n.tokenTimestamps,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Generated At'),
+                    title: Text(context.l10n.generatedAt),
                     subtitle: Text(user.generatedAt.toString()),
                     leading: const Icon(Icons.schedule),
                   ),
@@ -90,12 +124,12 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Expires At'),
+                    title: Text(context.l10n.expiresAt),
                     subtitle: Text(expiryTime.toString()),
                     leading: const Icon(Icons.access_time),
                     trailing: isExpiring
-                        ? const Chip(
-                            label: Text('Expiring Soon'),
+                        ? Chip(
+                            label: Text(context.l10n.expiringSoon),
                             backgroundColor: Colors.orange,
                           )
                         : null,
@@ -104,19 +138,22 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
                 // Token Duration Section
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'Token Duration',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    context.l10n.tokenDuration,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Expires In'),
+                    title: Text(context.l10n.expiresIn),
                     subtitle: Text(
-                      '${user.expiresIn} seconds (${(user.expiresIn / 60).toStringAsFixed(1)} minutes)',
+                      '${user.expiresIn} ${context.l10n.seconds} (${(user.expiresIn / 60).toStringAsFixed(1)} ${context.l10n.minutes})',
                     ),
                     leading: const Icon(Icons.timer),
                   ),
@@ -124,7 +161,7 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Time Remaining'),
+                    title: Text(context.l10n.timeRemaining),
                     subtitle: Text(
                       '${timeRemaining.inHours}h ${timeRemaining.inMinutes % 60}m ${timeRemaining.inSeconds % 60}s',
                     ),
@@ -137,17 +174,20 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
                 // Token Type Section
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'Token Type',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    context.l10n.tokenType,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Type'),
+                    title: Text(context.l10n.type),
                     subtitle: Text(user.tokenType),
                     leading: const Icon(Icons.info_outline),
                   ),
@@ -155,17 +195,20 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
                 // Access Token Section
                 const SizedBox(height: 16),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'Tokens',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    context.l10n.tokens,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Access Token'),
+                    title: Text(context.l10n.accessToken),
                     subtitle: SelectableText(
                       user.accessToken,
                       style: const TextStyle(fontSize: 10),
@@ -176,7 +219,7 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: ListTile(
-                    title: const Text('Refresh Token'),
+                    title: Text(context.l10n.refreshToken),
                     subtitle: SelectableText(
                       user.refreshToken,
                       style: const TextStyle(fontSize: 10),
