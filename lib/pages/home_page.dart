@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../elements/vehicle_selector.dart';
+import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/elements/vehicle_selector.dart';
 import 'vehicle_page.dart';
 import 'events_page.dart';
 import 'user_page.dart';
@@ -46,21 +47,21 @@ class _HomePageState extends State<HomePage> {
             _selectedIndex = index;
           });
         },
-        destinations: const <Widget>[
+        destinations: <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.car_rental_outlined),
-            selectedIcon: Icon(Icons.car_rental),
-            label: 'Vehicle',
+            icon: const Icon(Icons.car_rental_outlined),
+            selectedIcon: const Icon(Icons.car_rental),
+            label: context.l10n.navVehicle,
           ),
           NavigationDestination(
-            icon: Icon(Icons.event_note_outlined),
-            selectedIcon: Icon(Icons.event_note),
-            label: 'Events',
+            icon: const Icon(Icons.event_note_outlined),
+            selectedIcon: const Icon(Icons.event_note),
+            label: context.l10n.navEvents,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outlined),
-            selectedIcon: Icon(Icons.person),
-            label: 'User',
+            icon: const Icon(Icons.person_outlined),
+            selectedIcon: const Icon(Icons.person),
+            label: context.l10n.navUser,
           ),
         ],
       ),

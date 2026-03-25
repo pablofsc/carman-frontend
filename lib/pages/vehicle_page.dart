@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import '../elements/vehicle_information.dart';
-import '../elements/create_vehicle_dialog.dart';
+import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/elements/vehicle_information.dart';
+import 'package:carman/elements/create_vehicle_dialog.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 
 class VehiclePage extends riverpod.ConsumerStatefulWidget {
@@ -37,12 +38,12 @@ class _VehiclePageState extends riverpod.ConsumerState<VehiclePage> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'No vehicles yet',
+                    context.l10n.noVehiclesYet,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Add your first vehicle to get started',
+                    context.l10n.addFirstVehicle,
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -50,7 +51,7 @@ class _VehiclePageState extends riverpod.ConsumerState<VehiclePage> {
                   ElevatedButton.icon(
                     onPressed: () => CreateVehicleDialog.show(context),
                     icon: const Icon(Icons.add),
-                    label: const Text('Add Vehicle'),
+                    label: Text(context.l10n.addVehicle),
                   ),
                 ]
               ),

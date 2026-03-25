@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
+import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/pages/register_page.dart';
 
@@ -39,12 +40,12 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Sign in failed'),
+        title: Text(context.l10n.signInFailed),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('OK'),
+            child: Text(context.l10n.ok),
           ),
         ],
       ),
@@ -53,17 +54,17 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your username';
+      return context.l10n.enterUsername;
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your password';
+      return context.l10n.enterPassword;
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return context.l10n.passwordMustBeMinLength;
     }
     return null;
   }
@@ -94,7 +95,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
 
                     // Title
                     Text(
-                      'Welcome to Carman',
+                      context.l10n.welcomeToApp,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -105,7 +106,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
 
                     // Subtitle
                     Text(
-                      'Sign in to continue',
+                      context.l10n.signInToContinue,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -120,8 +121,8 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
                       decoration: InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'Enter your username',
+                        labelText: context.l10n.username,
+                        hintText: context.l10n.enterUsername,
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -139,8 +140,8 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                       autofillHints: const [AutofillHints.password],
                       onFieldSubmitted: (_) => _handleLogin(),
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
+                        labelText: context.l10n.password,
+                        hintText: context.l10n.enterPassword,
                         prefixIcon: const Icon(Icons.lock_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -160,9 +161,9 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                         ),
                       ),
                       child: authState.when(
-                        data: (_) => const Text(
-                          'Sign In',
-                          style: TextStyle(fontSize: 16),
+                        data: (_) => Text(
+                          context.l10n.signIn,
+                          style: const TextStyle(fontSize: 16),
                         ),
                         loading: () => SizedBox(
                           height: 23,
@@ -172,9 +173,9 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                             color: colorScheme.onPrimary,
                           ),
                         ),
-                        error: (e, st) => const Text(
-                          'Sign In',
-                          style: TextStyle(fontSize: 16),
+                        error: (e, st) => Text(
+                          context.l10n.signIn,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ),
@@ -184,7 +185,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 4,
                       children: [
-                        Text("Don't have an account?"),
+                        Text(context.l10n.noAccountQuestion),
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -200,7 +201,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          child: const Text('Create one'),
+                          child: Text(context.l10n.signUp),
                         ),
                       ],
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_event_dialog.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/pages/create_event_page.dart';
@@ -30,7 +31,7 @@ class EventsPage extends riverpod.ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              Text('${context.l10n.error}: $error'),
             ],
           ),
         ),
@@ -55,12 +56,12 @@ class EventsPage extends riverpod.ConsumerWidget {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No events yet',
+                                context.l10n.noEventsYet,
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Events will appear here',
+                                context.l10n.eventsWillAppearHere,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
@@ -118,7 +119,7 @@ class _EventListItem extends StatelessWidget {
           ),
         ),
         title: Text(
-          event.type ?? "unknown event type",
+          event.type ?? context.l10n.unknownEventType,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(

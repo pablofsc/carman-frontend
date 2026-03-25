@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/extensions/l10n_extension.dart';
 
 // TODO: improve this, maybe use a money input library?
 class _DecimalInputFormatter extends services.TextInputFormatter {
@@ -77,7 +78,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
 
     if (selectedVehicle == null) {
       setState(() {
-        _errorMessage = 'No vehicle selected';
+        _errorMessage = context.l10n.noVehicleSelected;
       });
       return;
     }
@@ -124,7 +125,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     final selectedVehicle = ref.watch(selectedVehicleProvider).asData?.value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Event')),
+      appBar: AppBar(title: Text(context.l10n.createEvent)),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -135,23 +136,23 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 child: ListTile(
                   leading: const Icon(Icons.car_rental),
                   title: Text(selectedVehicle.displayName),
-                  subtitle: const Text('Selected vehicle'),
+                  subtitle: Text(context.l10n.selectedVehicle),
                 ),
               )
             else
               Card(
                 color: Theme.of(context).colorScheme.errorContainer,
-                child: const ListTile(
-                  leading: Icon(Icons.warning),
-                  title: Text('No vehicle selected'),
-                  subtitle: Text('Please select a vehicle first'),
+                child: ListTile(
+                  leading: const Icon(Icons.warning),
+                  title: Text(context.l10n.noVehicleSelected),
+                  subtitle: Text(context.l10n.pleaseSelectVehicleFirst),
                 ),
               ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Event Type',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.eventType,
+                border: const OutlineInputBorder(),
               ),
               items: _eventTypes.map((type) {
                 return DropdownMenuItem(value: type, child: Text(type));
@@ -163,7 +164,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select an event type';
+                  return context.l10n.pleaseSelectEventType;
                 }
                 return null;
               },
@@ -171,18 +172,18 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description (optional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.descriptionOptional,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _odometerController,
-              decoration: const InputDecoration(
-                labelText: 'Odometer (km, optional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.odometerOptional,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
@@ -192,9 +193,9 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 Expanded(
                   child: TextFormField(
                     controller: _currencyCodeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Currency Code (ISO 4217)',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.currencyCode,
+                      border: const OutlineInputBorder(),
                       counterText: '',
                     ),
                     maxLength: 3,
@@ -204,9 +205,9 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 Expanded(
                   child: TextFormField(
                     controller: _costValueController,
-                    decoration: const InputDecoration(
-                      labelText: 'Amount (optional)',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.amountOptional,
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.numberWithOptions(
                       decimal: true,
@@ -243,7 +244,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Create Event'),
+                  : Text(context.l10n.createEvent),
             ),
           ],
         ),
