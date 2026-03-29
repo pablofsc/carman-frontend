@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/vehicle_information.dart';
-import 'package:carman/elements/create_vehicle_dialog.dart';
+import 'package:carman/pages/create_vehicle_page.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 
 class VehiclePage extends riverpod.ConsumerStatefulWidget {
@@ -49,7 +49,7 @@ class _VehiclePageState extends riverpod.ConsumerState<VehiclePage> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    onPressed: () => CreateVehicleDialog.show(context),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateVehiclePage())),
                     icon: const Icon(Icons.add),
                     label: Text(context.l10n.addVehicle),
                   ),

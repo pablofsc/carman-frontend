@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_vehicle_dialog.dart';
-import 'package:carman/elements/create_vehicle_dialog.dart';
+import 'package:carman/pages/create_vehicle_page.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
@@ -95,7 +95,7 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
                               context,
                             ).colorScheme.surfaceContainer,
                           ),
-                          onPressed: () => CreateVehicleDialog.show(context),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateVehiclePage())),
                           child: Text(context.l10n.addNewVehicle),
                         ),
                       ),
