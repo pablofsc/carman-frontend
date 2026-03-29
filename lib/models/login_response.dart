@@ -6,6 +6,7 @@ class LoginResponse {
   final DateTime generatedAt;
   final String userId;
   final String username;
+  final String? selectedLanguage;
 
   LoginResponse({
     required this.accessToken,
@@ -15,6 +16,7 @@ class LoginResponse {
     required this.generatedAt,
     required this.userId,
     required this.username,
+    this.selectedLanguage,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class LoginResponse {
       generatedAt: DateTime.parse(json['generatedAt']),
       userId: json['userId'] as String,
       username: json['username'] as String,
+      selectedLanguage: json['selectedLanguage'],
     );
   }
 
@@ -38,6 +41,7 @@ class LoginResponse {
       'generatedAt': generatedAt.toIso8601String(),
       'userId': userId,
       'username': username,
+      'selectedLanguage': selectedLanguage,
     };
   }
 

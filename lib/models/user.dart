@@ -6,6 +6,7 @@ class User {
   final DateTime modifiedAt;
   final String username;
   final UserVehicleRel? selectedVehicle;
+  final String? selectedLanguage;
 
   User({
     required this.id,
@@ -13,6 +14,7 @@ class User {
     required this.modifiedAt,
     required this.username,
     this.selectedVehicle,
+    this.selectedLanguage,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class User {
       selectedVehicle: json['selectedVehicle'] != null
           ? UserVehicleRel.fromJson(json['selectedVehicle'])
           : null,
+      selectedLanguage: json['selectedLanguage'],
     );
   }
 
@@ -34,6 +37,7 @@ class User {
       'modifiedAt': modifiedAt.toIso8601String(),
       'username': username,
       'selectedVehicle': selectedVehicle?.toJson(),
+      'selectedLanguage': selectedLanguage,
     };
   }
 }
