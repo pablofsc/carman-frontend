@@ -25,7 +25,9 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
 }
 
 class CreateEventPage extends riverpod.ConsumerStatefulWidget {
-  const CreateEventPage({super.key});
+  final String? initialType;
+
+  const CreateEventPage({super.key, this.initialType});
 
   @override
   riverpod.ConsumerState<CreateEventPage> createState() =>
@@ -58,6 +60,10 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   void initState() {
     super.initState();
     _currencyCodeController.text = 'BRL';
+
+    if (widget.initialType != null) {
+      _selectedType = widget.initialType;
+    }
   }
 
   @override
@@ -150,6 +156,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              initialValue: _selectedType,
               decoration: InputDecoration(
                 labelText: context.l10n.eventType,
                 border: const OutlineInputBorder(),

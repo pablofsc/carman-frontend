@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_event_dialog.dart';
+import 'package:carman/elements/expandable_fab.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/providers/events_provider.dart';
@@ -14,14 +15,34 @@ class EventsPage extends riverpod.ConsumerWidget {
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final eventsAsync = ref.watch(eventsProvider);
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CreateEventPage()),
-          );
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: ExpandableFab(
+        options: [
+          ExpandableFabOption(
+            icon: Icons.local_gas_station,
+            label: context.l10n.refuel,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const CreateEventPage(initialType: 'Refuel'),
+                ),
+              );
+            },
+          ),
+          ExpandableFabOption(
+            icon: Icons.event,
+            label: context.l10n.otherEvent,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CreateEventPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: eventsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

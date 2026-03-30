@@ -88,6 +88,8 @@
   "passwordsDoNotMatch": "Passwords do not match",
   "createAccount": "Create Account",
   "createCarmanAccount": "Create your Carman account",
+  "refuel": "Refuel",
+  "otherEvent": "Other Event",
   "yearMustBeBetween": "Must be {from}-{to}",
   "@yearMustBeBetween": {
     "placeholders": {

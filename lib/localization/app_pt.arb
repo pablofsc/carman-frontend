@@ -88,5 +88,7 @@
   "passwordsDoNotMatch": "As senhas não coincidem",
   "createAccount": "Criar Conta",
   "createCarmanAccount": "Crie sua conta no Carman",
+  "refuel": "Abastecimento",
+  "otherEvent": "Outro Evento",
   "yearMustBeBetween": "Deve ser entre {from} e {to}"
 }
