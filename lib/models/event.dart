@@ -1,5 +1,6 @@
 import 'vehicle.dart';
 import 'user.dart';
+import 'refuel_info.dart';
 
 class Event {
   final String id;
@@ -12,6 +13,7 @@ class Event {
   final double? odometer;
   final int? costValueMinor;
   final String? costCurrencyCode;
+  final RefuelInfo? refuelInfo;
 
   Event({
     required this.id,
@@ -24,6 +26,7 @@ class Event {
     this.odometer,
     this.costValueMinor,
     this.costCurrencyCode,
+    this.refuelInfo,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -40,6 +43,9 @@ class Event {
       odometer: json['odometer']?.toDouble(),
       costValueMinor: json['costValueMinor'],
       costCurrencyCode: json['costCurrencyCode'],
+      refuelInfo: json['refuelInfo'] != null
+          ? RefuelInfo.fromJson(json['refuelInfo'])
+          : null,
     );
   }
 
@@ -55,6 +61,7 @@ class Event {
       'odometer': odometer,
       'costValueMinor': costValueMinor,
       'costCurrencyCode': costCurrencyCode,
+      if (refuelInfo != null) 'refuelInfo': refuelInfo!.toJson(),
     };
   }
 }

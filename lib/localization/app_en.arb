@@ -90,6 +90,12 @@
   "createCarmanAccount": "Create your Carman account",
   "refuel": "Refuel",
   "otherEvent": "Other Event",
+  "fuelType": "Fuel Type",
+  "fuelAmount": "Fuel Amount",
+  "fuelAmountUnit": "Unit",
+  "gasStation": "Gas Station",
+  "literPrice": "Price/L",
+  "totalCost": "Total",
   "yearMustBeBetween": "Must be {from}-{to}",
   "@yearMustBeBetween": {
     "placeholders": {

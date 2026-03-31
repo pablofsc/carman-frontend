@@ -2,6 +2,7 @@ import 'dart:convert' as convert;
 
 import 'package:carman/adapters/api_client.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/refuel_info.dart';
 
 class EventRepository {
   static List<Event> _parseEvents(String body) {
@@ -52,6 +53,7 @@ class EventRepository {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    RefuelInfo? refuelInfo,
     required Map<String, String> headers,
   }) async {
     final body = convert.jsonEncode({
@@ -61,6 +63,7 @@ class EventRepository {
       'odometer': odometer,
       'costValueMinor': costValueMinor,
       'costCurrencyCode': costCurrencyCode,
+      if (refuelInfo != null) 'refuelInfo': refuelInfo.toJson(),
     });
 
     final response = await ApiClient.post(

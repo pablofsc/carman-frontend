@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/elements/refuel_info_form.dart';
 
 // TODO: improve this, maybe use a money input library?
 class _DecimalInputFormatter extends services.TextInputFormatter {
@@ -41,6 +42,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   final _odometerController = TextEditingController();
   final _costValueController = TextEditingController();
   final _currencyCodeController = TextEditingController();
+  final _refuelInfoFormKey = GlobalKey<RefuelInfoFormState>();
 
   bool _isSubmitting = false;
   String? _errorMessage;
@@ -95,6 +97,10 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     });
 
     try {
+      final refuelInfo = _selectedType == 'Refuel'
+          ? _refuelInfoFormKey.currentState?.getRefuelInfo()
+          : null;
+
       await ref
           .read(eventsProvider.notifier)
           .createEvent(
@@ -113,6 +119,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
             costCurrencyCode: _currencyCodeController.text.isEmpty
                 ? null
                 : _currencyCodeController.text,
+            refuelInfo: refuelInfo,
           );
 
       if (mounted) {
@@ -194,6 +201,19 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               ),
               keyboardType: TextInputType.number,
             ),
+
+            if (_selectedType == 'Refuel')
+              RefuelInfoForm(
+                key: _refuelInfoFormKey,
+                onTotalCostChanged: (total) {
+                  if (total != null) {
+                    _costValueController.text = total.toStringAsFixed(2);
+                  } else {
+                    _costValueController.clear();
+                  }
+                },
+              ),
+
             const SizedBox(height: 16),
             Row(
               children: [

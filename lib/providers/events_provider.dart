@@ -4,6 +4,7 @@ import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/repositories/event_repository.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/refuel_info.dart';
 
 final eventsProvider =
     riverpod.AsyncNotifierProvider<EventsNotifier, List<Event>>(
@@ -31,6 +32,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    RefuelInfo? refuelInfo,
   }) async {
     await EventRepository.createEvent(
       vehicleId: vehicleId,
@@ -39,6 +41,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
       odometer: odometer,
       costValueMinor: costValueMinor,
       costCurrencyCode: costCurrencyCode,
+      refuelInfo: refuelInfo,
       headers: await ref.read(authProvider.notifier).getHeaders(),
     );
 

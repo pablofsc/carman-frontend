@@ -90,5 +90,11 @@
   "createCarmanAccount": "Crie sua conta no Carman",
   "refuel": "Abastecimento",
   "otherEvent": "Outro Evento",
+  "fuelType": "Tipo de Combustível",
+  "fuelAmount": "Quantidade",
+  "fuelAmountUnit": "Unidade",
+  "gasStation": "Posto de Gasolina",
+  "literPrice": "Preço/L",
+  "totalCost": "Total",
   "yearMustBeBetween": "Deve ser entre {from} e {to}"
 }
