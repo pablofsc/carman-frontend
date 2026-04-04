@@ -96,6 +96,15 @@
   "gasStation": "Gas Station",
   "literPrice": "Price/L",
   "totalCost": "Total",
+  "editEvent": "Edit Event",
+  "eventDetails": "Event Details",
+  "author": "Author",
+  "createdAt": "Created At",
+  "modifiedAt": "Modified At",
+  "odometer": "Odometer",
+  "cost": "Cost",
+  "description": "Description",
+  "refuelDetails": "Refuel Details",
   "yearMustBeBetween": "Must be {from}-{to}",
   "@yearMustBeBetween": {
     "placeholders": {

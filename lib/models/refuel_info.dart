@@ -4,6 +4,7 @@ class RefuelInfo {
   final double? fuelAmount;
   final String? fuelAmountUnit;
   final String? gasStation;
+  final int? fuelUnitPrice;
 
   RefuelInfo({
     this.id,
@@ -11,6 +12,7 @@ class RefuelInfo {
     this.fuelAmount,
     this.fuelAmountUnit,
     this.gasStation,
+    this.fuelUnitPrice,
   });
 
   factory RefuelInfo.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class RefuelInfo {
       fuelAmount: json['fuelAmount']?.toDouble(),
       fuelAmountUnit: json['fuelAmountUnit'],
       gasStation: json['gasStation'],
+      fuelUnitPrice: json['fuelUnitPrice']?.toInt(),
     );
   }
 
@@ -30,6 +33,7 @@ class RefuelInfo {
       'fuelAmount': fuelAmount,
       'fuelAmountUnit': fuelAmountUnit,
       'gasStation': gasStation,
+      'fuelUnitPrice': fuelUnitPrice,
     };
   }
 }

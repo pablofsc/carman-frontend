@@ -79,6 +79,38 @@ class EventRepository {
     throw Exception('Failed to create event: ${response.statusCode}');
   }
 
+  static Future<Event> updateEvent({
+    required String eventId,
+    required String type,
+    String? description,
+    double? odometer,
+    int? costValueMinor,
+    String? costCurrencyCode,
+    RefuelInfo? refuelInfo,
+    required Map<String, String> headers,
+  }) async {
+    final body = convert.jsonEncode({
+      'type': type,
+      'description': description,
+      'odometer': odometer,
+      'costValueMinor': costValueMinor,
+      'costCurrencyCode': costCurrencyCode,
+      if (refuelInfo != null) 'refuelInfo': refuelInfo.toJson(),
+    });
+
+    final response = await ApiClient.put(
+      '/events/$eventId',
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      return Event.fromJson(convert.jsonDecode(response.body));
+    }
+
+    throw Exception('Failed to update event: ${response.statusCode}');
+  }
+
   static Future<void> deleteEvent(
     String id,
     Map<String, String> headers,

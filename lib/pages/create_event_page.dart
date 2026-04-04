@@ -6,6 +6,10 @@ import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/refuel_info_form.dart';
+import 'package:carman/elements/delete_event_dialog.dart';
+import 'package:carman/models/event.dart';
+import 'package:carman/models/refuel_info.dart';
+import 'package:carman/models/vehicle.dart';
 
 // TODO: improve this, maybe use a money input library?
 class _DecimalInputFormatter extends services.TextInputFormatter {
@@ -27,8 +31,9 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
 
 class CreateEventPage extends riverpod.ConsumerStatefulWidget {
   final String? initialType;
+  final Event? editingEvent;
 
-  const CreateEventPage({super.key, this.initialType});
+  const CreateEventPage({super.key, this.initialType, this.editingEvent});
 
   @override
   riverpod.ConsumerState<CreateEventPage> createState() =>
@@ -46,6 +51,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
 
   bool _isSubmitting = false;
   String? _errorMessage;
+  late Vehicle _selectedVehicle;
 
   final List<String> _eventTypes = [
     'Maintenance',
@@ -58,12 +64,49 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     'Other',
   ];
 
+  void _fillSelectedVehicle() {
+    final vehicle = ref.read(selectedVehicleProvider).asData?.value;
+
+    if (vehicle == null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Navigator.pop(context),
+      );
+
+      throw StateError('No vehicle selected');
+    }
+
+    _selectedVehicle = vehicle;
+  }
+
+  void _fillEditingEvent(Event e) {
+    _selectedType = e.type;
+    _descriptionController.text = e.description ?? '';
+
+    if (e.odometer != null) {
+      _odometerController.text = e.odometer!.toStringAsFixed(0);
+    }
+
+    if (e.costCurrencyCode != null) {
+      _currencyCodeController.text = e.costCurrencyCode!;
+    }
+
+    if (e.costValueMinor != null) {
+      _costValueController.text = (e.costValueMinor! / 100).toStringAsFixed(2);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _currencyCodeController.text = 'BRL';
 
-    if (widget.initialType != null) {
+    _fillSelectedVehicle();
+
+    final e = widget.editingEvent;
+
+    if (e != null) {
+      _fillEditingEvent(e);
+    } else if (widget.initialType != null) {
       _selectedType = widget.initialType;
     }
   }
@@ -77,17 +120,49 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     super.dispose();
   }
 
+  String? _description() =>
+      _descriptionController.text.isEmpty ? null : _descriptionController.text;
+
+  double? _odometer() => double.tryParse(_odometerController.text);
+
+  int? _costValueMinor() => _costValueController.text.isEmpty
+      ? null
+      : ((double.tryParse(_costValueController.text) ?? 0) * 100).toInt();
+
+  String? _currencyCode() => _currencyCodeController.text.isEmpty
+      ? null
+      : _currencyCodeController.text;
+
+  Future<void> _createEvent(RefuelInfo? refuelInfo) {
+    return ref
+        .read(eventsProvider.notifier)
+        .createEvent(
+          vehicleId: _selectedVehicle.id,
+          type: _selectedType!,
+          description: _description(),
+          odometer: _odometer(),
+          costValueMinor: _costValueMinor(),
+          costCurrencyCode: _currencyCode(),
+          refuelInfo: refuelInfo,
+        );
+  }
+
+  Future<void> _updateEvent(RefuelInfo? refuelInfo) {
+    return ref
+        .read(eventsProvider.notifier)
+        .updateEvent(
+          eventId: widget.editingEvent!.id,
+          type: _selectedType!,
+          description: _description(),
+          odometer: _odometer(),
+          costValueMinor: _costValueMinor(),
+          costCurrencyCode: _currencyCode(),
+          refuelInfo: refuelInfo,
+        );
+  }
+
   Future<void> _submitEvent() async {
     if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final selectedVehicle = ref.watch(selectedVehicleProvider).asData?.value;
-
-    if (selectedVehicle == null) {
-      setState(() {
-        _errorMessage = context.l10n.noVehicleSelected;
-      });
       return;
     }
 
@@ -101,26 +176,11 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
           ? _refuelInfoFormKey.currentState?.getRefuelInfo()
           : null;
 
-      await ref
-          .read(eventsProvider.notifier)
-          .createEvent(
-            vehicleId: selectedVehicle.id,
-            type: _selectedType!,
-            description: _descriptionController.text.isEmpty
-                ? null
-                : _descriptionController.text,
-            odometer: _odometerController.text.isEmpty
-                ? null
-                : double.tryParse(_odometerController.text),
-            costValueMinor: _costValueController.text.isEmpty
-                ? null
-                : ((double.tryParse(_costValueController.text) ?? 0) * 100)
-                      .toInt(),
-            costCurrencyCode: _currencyCodeController.text.isEmpty
-                ? null
-                : _currencyCodeController.text,
-            refuelInfo: refuelInfo,
-          );
+      if (widget.editingEvent != null) {
+        await _updateEvent(refuelInfo);
+      } else {
+        await _createEvent(refuelInfo);
+      }
 
       if (mounted) {
         Navigator.pop(context);
@@ -135,32 +195,43 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedVehicle = ref.watch(selectedVehicleProvider).asData?.value;
-
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.createEvent)),
+      appBar: AppBar(
+        title: Text(
+          widget.editingEvent != null
+              ? context.l10n.editEvent
+              : context.l10n.createEvent,
+        ),
+        actions: [
+          if (widget.editingEvent != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () async {
+                final nav = Navigator.of(context);
+                final deleted = await DeleteEventDialog.show(
+                  context,
+                  widget.editingEvent!,
+                );
+                if (deleted == true) {
+                  nav.pop(); // close edit page
+                  nav.pop(); // close details page
+                }
+              },
+            ),
+        ],
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            if (selectedVehicle != null)
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.car_rental),
-                  title: Text(selectedVehicle.displayName),
-                  subtitle: Text(context.l10n.selectedVehicle),
-                ),
-              )
-            else
-              Card(
-                color: Theme.of(context).colorScheme.errorContainer,
-                child: ListTile(
-                  leading: const Icon(Icons.warning),
-                  title: Text(context.l10n.noVehicleSelected),
-                  subtitle: Text(context.l10n.pleaseSelectVehicleFirst),
-                ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.car_rental),
+                title: Text(_selectedVehicle.displayName),
+                subtitle: Text(context.l10n.selectedVehicle),
               ),
+            ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: _selectedType,
@@ -205,6 +276,10 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
             if (_selectedType == 'Refuel')
               RefuelInfoForm(
                 key: _refuelInfoFormKey,
+                initialRefuelInfo: widget.editingEvent?.refuelInfo,
+                initialTotalCost: widget.editingEvent?.costValueMinor != null
+                    ? widget.editingEvent!.costValueMinor! / 100
+                    : null,
                 onTotalCostChanged: (total) {
                   if (total != null) {
                     _costValueController.text = total.toStringAsFixed(2);
@@ -214,36 +289,38 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 },
               ),
 
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _currencyCodeController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.currencyCode,
-                      border: const OutlineInputBorder(),
-                      counterText: '',
+            if (_selectedType != 'Refuel') ...[
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _currencyCodeController,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.currencyCode,
+                        border: const OutlineInputBorder(),
+                        counterText: '',
+                      ),
+                      maxLength: 3,
                     ),
-                    maxLength: 3,
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextFormField(
-                    controller: _costValueController,
-                    decoration: InputDecoration(
-                      labelText: context.l10n.amountOptional,
-                      border: const OutlineInputBorder(),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _costValueController,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.amountOptional,
+                        border: const OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [_DecimalInputFormatter()],
                     ),
-                    keyboardType: TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [_DecimalInputFormatter()],
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
             const SizedBox(height: 24),
             if (_errorMessage != null)
               Padding(
@@ -262,16 +339,18 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 ),
               ),
             FilledButton(
-              onPressed: _isSubmitting || selectedVehicle == null
-                  ? null
-                  : _submitEvent,
+              onPressed: _isSubmitting ? null : _submitEvent,
               child: _isSubmitting
                   ? const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(context.l10n.createEvent),
+                  : Text(
+                      widget.editingEvent != null
+                          ? context.l10n.editEvent
+                          : context.l10n.createEvent,
+                    ),
             ),
           ],
         ),

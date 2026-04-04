@@ -23,8 +23,15 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
 
 class RefuelInfoForm extends StatefulWidget {
   final ValueChanged<double?>? onTotalCostChanged;
+  final RefuelInfo? initialRefuelInfo;
+  final double? initialTotalCost;
 
-  const RefuelInfoForm({super.key, this.onTotalCostChanged});
+  const RefuelInfoForm({
+    super.key,
+    this.onTotalCostChanged,
+    this.initialRefuelInfo,
+    this.initialTotalCost,
+  });
 
   @override
   State<RefuelInfoForm> createState() => RefuelInfoFormState();
@@ -42,6 +49,16 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
   @override
   void initState() {
     super.initState();
+    final info = widget.initialRefuelInfo;
+
+    if (info != null) {
+      _fillRefuelInfo(info);
+    }
+
+    if (widget.initialTotalCost != null) {
+      _totalCostController.text = widget.initialTotalCost!.toStringAsFixed(2);
+    }
+
     _fuelAmountController.addListener(() => _onFieldChanged('amount'));
     _literPriceController.addListener(() => _onFieldChanged('price'));
     _totalCostController.addListener(() => _onFieldChanged('total'));
@@ -55,6 +72,24 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
     _totalCostController.dispose();
     _gasStationController.dispose();
     super.dispose();
+  }
+
+  void _fillRefuelInfo(RefuelInfo info) {
+    if (info.fuelType != null) _fuelTypeController.text = info.fuelType!;
+
+    if (info.fuelAmount != null) {
+      _fuelAmountController.text = info.fuelAmount!.toStringAsFixed(2);
+    }
+
+    if (info.fuelUnitPrice != null) {
+      _literPriceController.text = (info.fuelUnitPrice! / 100).toStringAsFixed(
+        2,
+      );
+    }
+
+    if (info.gasStation != null) {
+      _gasStationController.text = info.gasStation!;
+    }
   }
 
   void _onFieldChanged(String field) {
@@ -99,6 +134,9 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
           ? null
           : double.tryParse(_fuelAmountController.text),
       fuelAmountUnit: 'L',
+      fuelUnitPrice: double.tryParse(_literPriceController.text) != null
+          ? ((double.parse(_literPriceController.text)) * 100).toInt()
+          : null,
       gasStation: _gasStationController.text.isEmpty
           ? null
           : _gasStationController.text,

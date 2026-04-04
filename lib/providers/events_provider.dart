@@ -48,6 +48,29 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
     ref.invalidateSelf();
   }
 
+  Future<void> updateEvent({
+    required String eventId,
+    required String type,
+    String? description,
+    double? odometer,
+    int? costValueMinor,
+    String? costCurrencyCode,
+    RefuelInfo? refuelInfo,
+  }) async {
+    await EventRepository.updateEvent(
+      eventId: eventId,
+      type: type,
+      description: description,
+      odometer: odometer,
+      costValueMinor: costValueMinor,
+      costCurrencyCode: costCurrencyCode,
+      refuelInfo: refuelInfo,
+      headers: await ref.read(authProvider.notifier).getHeaders(),
+    );
+
+    ref.invalidateSelf();
+  }
+
   Future<void> deleteEvent(String eventId) async {
     await EventRepository.deleteEvent(
       eventId,
