@@ -6,6 +6,7 @@ class Event {
   final String id;
   final DateTime createdAt;
   final DateTime? modifiedAt;
+  final DateTime? occurredAt;
   final Vehicle vehicle;
   final User author;
   final String? type;
@@ -19,6 +20,7 @@ class Event {
     required this.id,
     required this.createdAt,
     this.modifiedAt,
+    this.occurredAt,
     required this.vehicle,
     required this.author,
     this.type,
@@ -35,6 +37,9 @@ class Event {
       createdAt: DateTime.parse(json['createdAt']),
       modifiedAt: json['modifiedAt'] != null
           ? DateTime.parse(json['modifiedAt'])
+          : null,
+      occurredAt: json['occurredAt'] != null
+          ? DateTime.parse(json['occurredAt'])
           : null,
       vehicle: Vehicle.fromJson(json['vehicle']),
       author: User.fromJson(json['author']),

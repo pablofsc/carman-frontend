@@ -32,6 +32,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    DateTime? occurredAt,
     RefuelInfo? refuelInfo,
   }) async {
     await EventRepository.createEvent(
@@ -41,6 +42,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
       odometer: odometer,
       costValueMinor: costValueMinor,
       costCurrencyCode: costCurrencyCode,
+      occurredAt: occurredAt,
       refuelInfo: refuelInfo,
       headers: await ref.read(authProvider.notifier).getHeaders(),
     );
@@ -55,6 +57,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    DateTime? occurredAt,
     RefuelInfo? refuelInfo,
   }) async {
     await EventRepository.updateEvent(
@@ -64,6 +67,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
       odometer: odometer,
       costValueMinor: costValueMinor,
       costCurrencyCode: costCurrencyCode,
+      occurredAt: occurredAt,
       refuelInfo: refuelInfo,
       headers: await ref.read(authProvider.notifier).getHeaders(),
     );

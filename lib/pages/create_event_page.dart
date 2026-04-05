@@ -48,6 +48,9 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   final _costValueController = TextEditingController();
   final _currencyCodeController = TextEditingController();
   final _refuelInfoFormKey = GlobalKey<RefuelInfoFormState>();
+  final _occurredDateController = TextEditingController();
+  final _occurredTimeController = TextEditingController();
+  DateTime? _occurredAt;
 
   bool _isSubmitting = false;
   String? _errorMessage;
@@ -81,6 +84,11 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   void _fillEditingEvent(Event e) {
     _selectedType = e.type;
     _descriptionController.text = e.description ?? '';
+    if (e.occurredAt != null) {
+      _occurredAt = e.occurredAt;
+      _occurredDateController.text = _formatDate(e.occurredAt!);
+      _occurredTimeController.text = _formatTime(e.occurredAt!);
+    }
 
     if (e.odometer != null) {
       _odometerController.text = e.odometer!.toStringAsFixed(0);
@@ -106,8 +114,14 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
 
     if (e != null) {
       _fillEditingEvent(e);
-    } else if (widget.initialType != null) {
-      _selectedType = widget.initialType;
+    } else {
+      if (widget.initialType != null) {
+        _selectedType = widget.initialType;
+      }
+
+      _occurredAt = DateTime.now();
+      _occurredDateController.text = _formatDate(_occurredAt!);
+      _occurredTimeController.text = _formatTime(_occurredAt!);
     }
   }
 
@@ -117,6 +131,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     _odometerController.dispose();
     _costValueController.dispose();
     _currencyCodeController.dispose();
+    _occurredDateController.dispose();
+    _occurredTimeController.dispose();
     super.dispose();
   }
 
@@ -143,6 +159,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
           odometer: _odometer(),
           costValueMinor: _costValueMinor(),
           costCurrencyCode: _currencyCode(),
+          occurredAt: _occurredAt,
           refuelInfo: refuelInfo,
         );
   }
@@ -157,6 +174,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
           odometer: _odometer(),
           costValueMinor: _costValueMinor(),
           costCurrencyCode: _currencyCode(),
+          occurredAt: _occurredAt,
           refuelInfo: refuelInfo,
         );
   }
@@ -193,6 +211,65 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     }
   }
 
+  String _formatDate(DateTime dt) {
+    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+  }
+
+  String _formatTime(DateTime dt) {
+    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _occurredAt ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      final time = _occurredAt != null
+          ? TimeOfDay.fromDateTime(_occurredAt!)
+          : const TimeOfDay(hour: 0, minute: 0);
+
+      _occurredAt = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        time.hour,
+        time.minute,
+      );
+
+      _occurredDateController.text = _formatDate(_occurredAt!);
+      _occurredTimeController.text = _formatTime(_occurredAt!);
+    });
+  }
+
+  Future<void> _pickTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _occurredAt != null
+          ? TimeOfDay.fromDateTime(_occurredAt!)
+          : TimeOfDay.now(),
+    );
+    if (picked == null || !mounted) return;
+
+    setState(() {
+      final date = _occurredAt ?? DateTime.now();
+      _occurredAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        picked.hour,
+        picked.minute,
+      );
+      _occurredDateController.text = _formatDate(_occurredAt!);
+      _occurredTimeController.text = _formatTime(_occurredAt!);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,12 +287,13 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 color: Theme.of(context).colorScheme.error,
               ),
               onPressed: () async {
+                if (!mounted) return;
                 final nav = Navigator.of(context);
                 final deleted = await DeleteEventDialog.show(
                   context,
                   widget.editingEvent!,
                 );
-                if (deleted == true) {
+                if (mounted && deleted == true) {
                   nav.pop(); // close edit page
                   nav.pop(); // close details page
                 }
@@ -261,6 +339,42 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                       }
                       return null;
                     },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.access_time),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _occurredDateController,
+                    readOnly: true,
+                    onTap: _pickDate,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.occurredAtDate,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (_) => _occurredAt == null
+                        ? context.l10n.pleaseSelectEventDate
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _occurredTimeController,
+                    readOnly: true,
+                    onTap: _pickTime,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.occurredAtTime,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (_) => _occurredAt == null
+                        ? context.l10n.pleaseSelectEventDate
+                        : null,
                   ),
                 ),
               ],

@@ -53,6 +53,7 @@ class EventRepository {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    DateTime? occurredAt,
     RefuelInfo? refuelInfo,
     required Map<String, String> headers,
   }) async {
@@ -63,6 +64,7 @@ class EventRepository {
       'odometer': odometer,
       'costValueMinor': costValueMinor,
       'costCurrencyCode': costCurrencyCode,
+      if (occurredAt != null) 'occurredAt': occurredAt.toUtc().toIso8601String(),
       if (refuelInfo != null) 'refuelInfo': refuelInfo.toJson(),
     });
 
@@ -86,6 +88,7 @@ class EventRepository {
     double? odometer,
     int? costValueMinor,
     String? costCurrencyCode,
+    DateTime? occurredAt,
     RefuelInfo? refuelInfo,
     required Map<String, String> headers,
   }) async {
@@ -95,6 +98,7 @@ class EventRepository {
       'odometer': odometer,
       'costValueMinor': costValueMinor,
       'costCurrencyCode': costCurrencyCode,
+      if (occurredAt != null) 'occurredAt': occurredAt.toUtc().toIso8601String(),
       if (refuelInfo != null) 'refuelInfo': refuelInfo.toJson(),
     });
 

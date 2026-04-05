@@ -159,6 +159,15 @@ class EventDetailsPage extends StatelessWidget {
               context.l10n.createdAt,
               _formatDateTime(event.createdAt),
             ),
+            if (event.occurredAt != null) ...[
+              const Divider(),
+              _buildInfoRow(
+                context,
+                Icons.event_available,
+                context.l10n.occurredAt,
+                _formatDateTime(event.occurredAt!),
+              ),
+            ],
             if (event.modifiedAt != null) ...[
               const Divider(),
               _buildInfoRow(
