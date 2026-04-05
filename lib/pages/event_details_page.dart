@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/pages/create_event_page.dart';
+import 'package:carman/elements/delete_event_dialog.dart';
 
 class EventDetailsPage extends StatelessWidget {
   final Event event;
@@ -55,6 +56,22 @@ class EventDetailsPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.delete_outline,
+                        color: theme.colorScheme.error,
+                      ),
+                      onPressed: () async {
+                        final nav = Navigator.of(context);
+                        final deleted = await DeleteEventDialog.show(
+                          context,
+                          event,
+                        );
+                        if (deleted == true) {
+                          nav.pop(); // close details sheet
+                        }
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
