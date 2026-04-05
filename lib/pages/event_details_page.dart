@@ -49,12 +49,33 @@ class EventDetailsPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      child: Icon(
+                        _getEventIcon(event.type),
+                        size: 20,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        context.l10n.eventDetails,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            event.type ?? context.l10n.unknownEventType,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            event.vehicle.displayName,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     IconButton(
@@ -97,8 +118,7 @@ class EventDetailsPage extends StatelessWidget {
                   controller: scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
-                    _buildHeader(context, theme),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     _buildInfoCard(context, theme),
                     if (event.description != null &&
                         event.description!.isNotEmpty) ...[
@@ -117,48 +137,6 @@ class EventDetailsPage extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, ThemeData theme) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(
-                _getEventIcon(event.type),
-                size: 28,
-                color: theme.colorScheme.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.type ?? context.l10n.unknownEventType,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    event.vehicle.displayName,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
