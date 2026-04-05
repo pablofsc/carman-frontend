@@ -380,7 +380,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                     )
                   : Text(
                       widget.editingEvent != null
-                          ? context.l10n.editEvent
+                          ? context.l10n.saveChanges
                           : context.l10n.createEvent,
                     ),
             ),

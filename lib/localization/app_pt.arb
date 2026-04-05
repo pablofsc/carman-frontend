@@ -97,6 +97,7 @@
   "literPrice": "Preço/L",
   "totalCost": "Total",
   "editEvent": "Editar Evento",
+  "saveChanges": "Salvar Alterações",
   "eventDetails": "Detalhes do Evento",
   "author": "Autor",
   "createdAt": "Criado em",
