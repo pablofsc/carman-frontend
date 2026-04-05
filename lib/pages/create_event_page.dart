@@ -233,44 +233,72 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               ),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedType,
-              decoration: InputDecoration(
-                labelText: context.l10n.eventType,
-                border: const OutlineInputBorder(),
-              ),
-              items: _eventTypes.map((type) {
-                return DropdownMenuItem(value: type, child: Text(type));
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedType = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return context.l10n.pleaseSelectEventType;
-                }
-                return null;
-              },
+            Row(
+              children: [
+                const Icon(Icons.event),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _selectedType,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.eventType,
+                      border: const OutlineInputBorder(),
+                    ),
+                    items: _eventTypes.map((type) {
+                      return DropdownMenuItem(value: type, child: Text(type));
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedType = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return context.l10n.pleaseSelectEventType;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: context.l10n.descriptionOptional,
-                border: const OutlineInputBorder(),
-              ),
-              maxLines: 3,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Icon(Icons.notes),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.descriptionOptional,
+                      border: const OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _odometerController,
-              decoration: InputDecoration(
-                labelText: context.l10n.odometerOptional,
-                border: const OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
+            Row(
+              children: [
+                const Icon(Icons.speed),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _odometerController,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.odometerOptional,
+                      border: const OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
             ),
 
             if (_selectedType == 'Refuel')
@@ -293,6 +321,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               const SizedBox(height: 16),
               Row(
                 children: [
+                  const Icon(Icons.attach_money),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _currencyCodeController,
@@ -305,6 +335,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                     ),
                   ),
                   const SizedBox(width: 16),
+                  const Icon(Icons.payments),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _costValueController,

@@ -148,100 +148,95 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         Row(
           children: [
             const Expanded(child: Divider()),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                context.l10n.refuel,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
+              child: const Icon(Icons.local_gas_station)
             ),
             const Expanded(child: Divider()),
           ],
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _fuelTypeController,
-          decoration: InputDecoration(
-            labelText: context.l10n.fuelType,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: TextFormField(
-                controller: _literPriceController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.literPrice,
-                  border: const OutlineInputBorder(),
-                  prefixText: 'R\$ ',
-                ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [_DecimalInputFormatter()],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-              child: Text(
-                '×',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-            ),
-            Expanded(
-              child: TextFormField(
-                controller: _fuelAmountController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.fuelAmount,
-                  border: const OutlineInputBorder(),
-                  suffixText: 'L',
-                ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [_DecimalInputFormatter()],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-              child: Text(
-                '=',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-            ),
-            Expanded(
-              child: TextFormField(
-                controller: _totalCostController,
-                decoration: InputDecoration(
-                  labelText: context.l10n.totalCost,
-                  border: const OutlineInputBorder(),
-                  prefixText: 'R\$ ',
-                ),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [_DecimalInputFormatter()],
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _literPriceController,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.literPrice,
+                        border: const OutlineInputBorder(),
+                        prefixText: 'R\$ ',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [_DecimalInputFormatter()],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 14,
+                    ),
+                    child: Text(
+                      '×',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _fuelAmountController,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.fuelAmount,
+                        border: const OutlineInputBorder(),
+                        suffixText: 'L',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [_DecimalInputFormatter()],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 14,
+                    ),
+                    child: Text(
+                      '=',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _totalCostController,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.totalCost,
+                        border: const OutlineInputBorder(),
+                        prefixText: 'R\$ ',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      inputFormatters: [_DecimalInputFormatter()],
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _gasStationController,
-          decoration: InputDecoration(
-            labelText: context.l10n.gasStation,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const Divider(),
+        )
       ],
     );
   }
