@@ -6,6 +6,7 @@ import 'package:carman/pages/login_page.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
 import 'package:carman/localization/app_localizations.dart';
+import 'package:carman/providers/theme_provider.dart';
 
 void main() {
   runApp(const riverpod.ProviderScope(child: MyApp()));
@@ -30,10 +31,7 @@ class MyApp extends riverpod.ConsumerWidget {
       locale: ref.watch(localeProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: .fromSeed(seedColor: Colors.indigo),
-      ),
+      theme: ref.watch(themeProvider).themeData,
       initialRoute: '/',
       routes: {
         '/': (context) => _decideRootPage(ref),

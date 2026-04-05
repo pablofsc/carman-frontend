@@ -105,5 +105,6 @@
   "cost": "Custo",
   "description": "Descrição",
   "refuelDetails": "Detalhes do Abastecimento",
-  "yearMustBeBetween": "Deve ser entre {from} e {to}"
+  "yearMustBeBetween": "Deve ser entre {from} e {to}",
+  "theme": "Tema"
 }

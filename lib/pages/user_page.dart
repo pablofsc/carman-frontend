@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
+import 'package:carman/providers/theme_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 
 class UserPage extends riverpod.ConsumerStatefulWidget {
@@ -73,6 +74,32 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                       onChanged: (locale) {
                         if (locale != null) {
                           ref.read(localeProvider.notifier).setLocale(locale);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+
+                // Theme Section
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: Text(context.l10n.theme),
+                    leading: const Icon(Icons.palette),
+                    trailing: DropdownButton<String>(
+                      value: ref.watch(themeProvider).key,
+                      underline: const SizedBox.shrink(),
+                      items: themes
+                          .map(
+                            (theme) => DropdownMenuItem(
+                              value: theme.key,
+                              child: Text(theme.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (mode) {
+                        if (mode != null) {
+                          ref.read(themeProvider.notifier).setTheme(mode);
                         }
                       },
                     ),

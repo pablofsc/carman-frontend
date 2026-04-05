@@ -111,5 +111,6 @@
       "from": { "type": "String" },
       "to": { "type": "String" }
     }
-  }
+  },
+  "theme": "Theme"
 }
