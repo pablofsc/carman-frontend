@@ -133,11 +133,10 @@ class _EventListItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EventDetailsPage(event: event),
-            ),
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => EventDetailsPage(event: event),
           );
         },
         onLongPress: () => DeleteEventDialog.show(context, event),

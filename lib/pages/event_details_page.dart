@@ -34,39 +34,72 @@ class EventDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.eventDetails),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateEventPage(editingEvent: event),
-                ),
-              );
-            },
+    return DraggableScrollableSheet(
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildHeader(context, theme),
-          const SizedBox(height: 16),
-          _buildInfoCard(context, theme),
-          if (event.description != null && event.description!.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            _buildDescriptionCard(context, theme),
-          ],
-          if (event.refuelInfo != null) ...[
-            const SizedBox(height: 16),
-            _buildRefuelCard(context, theme),
-          ],
-        ],
-      ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        context.l10n.eventDetails,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CreateEventPage(editingEvent: event),
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    _buildHeader(context, theme),
+                    const SizedBox(height: 16),
+                    _buildInfoCard(context, theme),
+                    if (event.description != null &&
+                        event.description!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      _buildDescriptionCard(context, theme),
+                    ],
+                    if (event.refuelInfo != null) ...[
+                      const SizedBox(height: 16),
+                      _buildRefuelCard(context, theme),
+                    ],
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
