@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as services;
 
+import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/refuel_info.dart';
 
@@ -25,12 +26,14 @@ class RefuelInfoForm extends StatefulWidget {
   final ValueChanged<double?>? onTotalCostChanged;
   final RefuelInfo? initialRefuelInfo;
   final double? initialTotalCost;
+  final String currencyCode;
 
   const RefuelInfoForm({
     super.key,
     this.onTotalCostChanged,
     this.initialRefuelInfo,
     this.initialTotalCost,
+    this.currencyCode = 'BRL',
   });
 
   @override
@@ -172,7 +175,7 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
                       decoration: InputDecoration(
                         labelText: context.l10n.literPrice,
                         border: const OutlineInputBorder(),
-                        prefixText: 'R\$ ',
+                        prefixText: '${CurrencyUtils.symbol(widget.currencyCode)} ',
                       ),
                       keyboardType: TextInputType.numberWithOptions(
                         decimal: true,
@@ -224,7 +227,7 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
                       decoration: InputDecoration(
                         labelText: context.l10n.totalCost,
                         border: const OutlineInputBorder(),
-                        prefixText: 'R\$ ',
+                        prefixText: '${CurrencyUtils.symbol(widget.currencyCode)} ',
                       ),
                       keyboardType: TextInputType.numberWithOptions(
                         decimal: true,

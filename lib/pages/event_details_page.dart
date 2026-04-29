@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/pages/create_event_page.dart';
@@ -193,7 +194,7 @@ class EventDetailsPage extends StatelessWidget {
                 context,
                 Icons.attach_money,
                 context.l10n.cost,
-                '${(event.costValueMinor! / 100).toStringAsFixed(2)} ${event.costCurrencyCode}',
+                CurrencyUtils.format(event.costValueMinor!, event.costCurrencyCode!),
               ),
             ],
           ],

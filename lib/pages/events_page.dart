@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/elements/delete_event_dialog.dart';
 import 'package:carman/elements/expandable_fab.dart';
+import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/providers/events_provider.dart';
@@ -206,7 +207,10 @@ class _EventListItem extends StatelessWidget {
                   if (event.costValueMinor != null &&
                       event.costCurrencyCode != null)
                     Text(
-                      '${(event.costValueMinor! / 100).toStringAsFixed(2)} ${event.costCurrencyCode}',
+                      CurrencyUtils.format(
+                        event.costValueMinor!,
+                        event.costCurrencyCode!,
+                      ),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

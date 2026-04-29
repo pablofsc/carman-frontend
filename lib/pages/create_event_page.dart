@@ -425,6 +425,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 initialTotalCost: widget.editingEvent?.costValueMinor != null
                     ? widget.editingEvent!.costValueMinor! / 100
                     : null,
+                currencyCode:
+                    _currencyCode() ?? 'BRL', // TODO: get from preferences
                 onTotalCostChanged: (total) {
                   if (total != null) {
                     _costValueController.text = total.toStringAsFixed(2);
