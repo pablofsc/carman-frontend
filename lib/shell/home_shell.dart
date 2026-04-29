@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/vehicle_selector.dart';
-import 'vehicle_page.dart';
-import 'events_page.dart';
-import 'settings_page.dart';
+import 'package:carman/pages/vehicle_page.dart';
+import 'package:carman/pages/events_page.dart';
+import 'package:carman/pages/settings_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeShell extends StatefulWidget {
+  const HomeShell({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeShellState extends State<HomeShell> {
   int _selectedIndex = 0;
 
   late final List<Widget> _pages;

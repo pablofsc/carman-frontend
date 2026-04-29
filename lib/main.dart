@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/pages/home_page.dart';
+import 'package:carman/shell/home_shell.dart';
 import 'package:carman/pages/login_page.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
@@ -19,7 +19,7 @@ class MyApp extends riverpod.ConsumerWidget {
     final auth = ref.watch(authProvider);
 
     return auth.maybeWhen(
-      data: (user) => user == null ? const LoginPage() : const HomePage(),
+      data: (user) => user == null ? const LoginPage() : const HomeShell(),
       orElse: () => const LoginPage(),
     );
   }
@@ -35,7 +35,7 @@ class MyApp extends riverpod.ConsumerWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => _decideRootPage(ref),
-        '/home': (context) => const HomePage(),
+        '/home': (context) => const HomeShell(),
         '/login': (context) => const LoginPage(),
       },
     );
