@@ -6,10 +6,10 @@ import 'package:carman/models/event.dart';
 import 'package:carman/pages/create_event_page.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
 
-class EventDetailsPage extends StatelessWidget {
+class EventDetailsSheet extends StatelessWidget {
   final Event event;
 
-  const EventDetailsPage({super.key, required this.event});
+  const EventDetailsSheet({super.key, required this.event});
 
   IconData _getEventIcon(String? type) {
     if (type == null) return Icons.event;

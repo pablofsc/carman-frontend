@@ -8,7 +8,7 @@ import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/pages/create_event_page.dart';
-import 'package:carman/pages/event_details_page.dart';
+import 'package:carman/elements/event_details_sheet.dart';
 
 class EventsPage extends riverpod.ConsumerWidget {
   const EventsPage({super.key});
@@ -137,7 +137,7 @@ class _EventListItem extends StatelessWidget {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => EventDetailsPage(event: event),
+            builder: (context) => EventDetailsSheet(event: event),
           );
         },
         onLongPress: () => DeleteEventDialog.show(context, event),
