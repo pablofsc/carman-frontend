@@ -117,5 +117,7 @@
       "to": { "type": "String" }
     }
   },
-  "theme": "Theme"
+  "theme": "Theme",
+  "currency": "Currency",
+  "changeCurrencyInSettings": "You can change your default currency in the settings page"
 }

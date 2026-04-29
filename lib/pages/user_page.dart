@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/providers/currency_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
+import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/providers/theme_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 
@@ -74,6 +76,32 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
                       onChanged: (locale) {
                         if (locale != null) {
                           ref.read(localeProvider.notifier).setLocale(locale);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+
+                // Currency Section
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    title: Text(context.l10n.currency),
+                    leading: const Icon(Icons.attach_money),
+                    trailing: DropdownButton<String>(
+                      value: commonCurrencies.contains(ref.watch(currencyProvider))
+                          ? ref.watch(currencyProvider)
+                          : null,
+                      underline: const SizedBox.shrink(),
+                      items: commonCurrencies
+                          .map((code) => DropdownMenuItem(
+                                value: code,
+                                child: Text(CurrencyUtils.displayName(code)),
+                              ))
+                          .toList(),
+                      onChanged: (code) {
+                        if (code != null) {
+                          ref.read(currencyProvider.notifier).setCurrency(code);
                         }
                       },
                     ),

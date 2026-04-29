@@ -7,6 +7,7 @@ class User {
   final String username;
   final UserVehicleRel? selectedVehicle;
   final String? selectedLanguage;
+  final String? selectedCurrency;
 
   User({
     required this.id,
@@ -15,6 +16,7 @@ class User {
     required this.username,
     this.selectedVehicle,
     this.selectedLanguage,
+    this.selectedCurrency,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class User {
           ? UserVehicleRel.fromJson(json['selectedVehicle'])
           : null,
       selectedLanguage: json['selectedLanguage'],
+      selectedCurrency: json['selectedCurrency'],
     );
   }
 
@@ -38,6 +41,7 @@ class User {
       'username': username,
       'selectedVehicle': selectedVehicle?.toJson(),
       'selectedLanguage': selectedLanguage,
+      'selectedCurrency': selectedCurrency,
     };
   }
 }

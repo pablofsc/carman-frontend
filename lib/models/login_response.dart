@@ -7,6 +7,7 @@ class LoginResponse {
   final String userId;
   final String username;
   final String? selectedLanguage;
+  final String? selectedCurrency;
 
   LoginResponse({
     required this.accessToken,
@@ -17,6 +18,7 @@ class LoginResponse {
     required this.userId,
     required this.username,
     this.selectedLanguage,
+    this.selectedCurrency,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class LoginResponse {
       userId: json['userId'] as String,
       username: json['username'] as String,
       selectedLanguage: json['selectedLanguage'],
+      selectedCurrency: json['selectedCurrency'],
     );
   }
 
@@ -42,6 +45,7 @@ class LoginResponse {
       'userId': userId,
       'username': username,
       'selectedLanguage': selectedLanguage,
+      'selectedCurrency': selectedCurrency,
     };
   }
 

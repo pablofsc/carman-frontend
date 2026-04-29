@@ -23,6 +23,12 @@ class CurrencyUtils {
     return intl.NumberFormat.simpleCurrency(name: currencyCode).currencySymbol;
   }
 
+  /// Returns a label for the provided code. e.g. `BRL` => `BRL (R$)`
+  static String displayName(String currencyCode) {
+    final fmt = intl.NumberFormat.simpleCurrency(name: currencyCode);
+    return '${fmt.currencyName ?? currencyCode} (${fmt.currencySymbol})';
+  }
+
   static int _pow10(int exp) {
     var result = 1;
 

@@ -3,7 +3,9 @@ import 'package:flutter/services.dart' as services;
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/selected_vehicle_provider.dart';
+import 'package:carman/providers/currency_provider.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/refuel_info_form.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
@@ -106,7 +108,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   @override
   void initState() {
     super.initState();
-    _currencyCodeController.text = 'BRL';
+    _currencyCodeController.text = ref.read(currencyProvider);
 
     _fillSelectedVehicle();
 
@@ -425,8 +427,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 initialTotalCost: widget.editingEvent?.costValueMinor != null
                     ? widget.editingEvent!.costValueMinor! / 100
                     : null,
-                currencyCode:
-                    _currencyCode() ?? 'BRL', // TODO: get from preferences
+                currencyCode: _currencyCodeController.text,
                 onTotalCostChanged: (total) {
                   if (total != null) {
                     _costValueController.text = total.toStringAsFixed(2);
@@ -440,20 +441,6 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.attach_money),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _currencyCodeController,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.currencyCode,
-                        border: const OutlineInputBorder(),
-                        counterText: '',
-                      ),
-                      maxLength: 3,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
                   const Icon(Icons.payments),
                   const SizedBox(width: 12),
                   Expanded(
@@ -462,6 +449,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                       decoration: InputDecoration(
                         labelText: context.l10n.amountOptional,
                         border: const OutlineInputBorder(),
+                        prefixText:
+                            '${CurrencyUtils.symbol(_currencyCodeController.text)} ',
                       ),
                       keyboardType: TextInputType.numberWithOptions(
                         decimal: true,
@@ -472,6 +461,16 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 ],
               ),
             ],
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 10),
+              child: Text(
+                context.l10n.changeCurrencyInSettings,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
             const SizedBox(height: 24),
             if (_errorMessage != null)
               Padding(

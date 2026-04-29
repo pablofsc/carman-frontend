@@ -111,5 +111,7 @@
   "description": "Descrição",
   "refuelDetails": "Detalhes do Abastecimento",
   "yearMustBeBetween": "Deve ser entre {from} e {to}",
-  "theme": "Tema"
+  "theme": "Tema",
+  "currency": "Moeda",
+  "changeCurrencyInSettings": "Você pode alterar sua moeda padrão nas configurações"
 }
