@@ -4,7 +4,7 @@ import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/vehicle_selector.dart';
 import 'vehicle_page.dart';
 import 'events_page.dart';
-import 'user_page.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _pages = [const VehiclePage(), const EventsPage(), const UserPage()];
+    _pages = [const VehiclePage(), const EventsPage(), const SettingsPage()];
   }
 
   @override
@@ -59,9 +59,9 @@ class _HomePageState extends State<HomePage> {
             label: context.l10n.navEvents,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.person_outlined),
-            selectedIcon: const Icon(Icons.person),
-            label: context.l10n.navUser,
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: const Icon(Icons.settings),
+            label: context.l10n.navSettings,
           ),
         ],
       ),

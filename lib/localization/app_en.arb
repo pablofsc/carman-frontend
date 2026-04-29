@@ -36,6 +36,7 @@
   "navVehicle": "Vehicle",
   "navEvents": "Events",
   "navUser": "User",
+  "navSettings": "Settings",
   "noEventsYet": "No events yet",
   "eventsWillAppearHere": "Events will appear here",
   "unknownEventType": "Unknown event type",
@@ -119,5 +120,6 @@
   },
   "theme": "Theme",
   "currency": "Currency",
+  "settings": "Settings",
   "changeCurrencyInSettings": "You can change your default currency in the settings page"
 }

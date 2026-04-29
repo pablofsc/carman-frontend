@@ -8,14 +8,14 @@ import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/providers/theme_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 
-class UserPage extends riverpod.ConsumerStatefulWidget {
-  const UserPage({super.key});
+class SettingsPage extends riverpod.ConsumerStatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  riverpod.ConsumerState<UserPage> createState() => _UserPageState();
+  riverpod.ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _UserPageState extends riverpod.ConsumerState<UserPage> {
+class _SettingsPageState extends riverpod.ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class _UserPageState extends riverpod.ConsumerState<UserPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.userInfo),
+        title: Text(context.l10n.settings),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

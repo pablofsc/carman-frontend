@@ -36,6 +36,7 @@
   "navVehicle": "Veículo",
   "navEvents": "Eventos",
   "navUser": "Usuário",
+  "navSettings": "Configurações",
   "noEventsYet": "Nenhum evento ainda",
   "eventsWillAppearHere": "Os eventos aparecerão aqui",
   "unknownEventType": "Tipo de evento desconhecido",
@@ -113,5 +114,6 @@
   "yearMustBeBetween": "Deve ser entre {from} e {to}",
   "theme": "Tema",
   "currency": "Moeda",
+  "settings": "Configurações",
   "changeCurrencyInSettings": "Você pode alterar sua moeda padrão nas configurações"
 }
