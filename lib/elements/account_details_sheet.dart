@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'package:carman/extensions/l10n_extension.dart';
-import 'package:carman/models/login_response.dart';
+import 'package:carman/models/auth_response.dart';
 
 class AccountDetailsSheet extends StatelessWidget {
-  final LoginResponse user;
+  final AuthResponse auth;
 
-  const AccountDetailsSheet({super.key, required this.user});
+  const AccountDetailsSheet({super.key, required this.auth});
 
-  static void show(BuildContext context, LoginResponse user) {
+  static void show(BuildContext context, AuthResponse auth) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AccountDetailsSheet(user: user),
+      builder: (_) => AccountDetailsSheet(auth: auth),
     );
   }
 
@@ -25,7 +25,7 @@ class AccountDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final expiryTime = user.generatedAt.add(Duration(seconds: user.expiresIn));
+    final expiryTime = auth.generatedAt.add(Duration(seconds: auth.expiresIn));
     final timeRemaining = expiryTime.difference(DateTime.now());
     final isExpiring = timeRemaining.inSeconds < 300;
 
@@ -58,13 +58,13 @@ class AccountDetailsSheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user.username,
+                            auth.user.username,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            user.userId,
+                            auth.user.id,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -151,23 +151,23 @@ class AccountDetailsSheet extends StatelessWidget {
               context,
               Icons.person,
               context.l10n.username,
-              user.username,
+              auth.user.username,
             ),
             const Divider(),
-            _infoRow(context, Icons.badge, context.l10n.userId, user.userId),
+            _infoRow(context, Icons.badge, context.l10n.userId, auth.user.id),
             const Divider(),
             _infoRow(
               context,
               Icons.language,
               context.l10n.language,
-              user.selectedLanguage ?? '-',
+              auth.user.selectedLanguage ?? '-',
             ),
             const Divider(),
             _infoRow(
               context,
               Icons.attach_money,
               context.l10n.currency,
-              user.selectedCurrency ?? '-',
+              auth.user.selectedCurrency ?? '-',
             ),
           ],
         ),
@@ -192,7 +192,7 @@ class AccountDetailsSheet extends StatelessWidget {
               context,
               Icons.schedule,
               context.l10n.generatedAt,
-              _formatDateTime(user.generatedAt),
+              _formatDateTime(auth.generatedAt),
             ),
             const Divider(),
             Padding(
@@ -231,7 +231,7 @@ class AccountDetailsSheet extends StatelessWidget {
               context,
               Icons.timer,
               context.l10n.expiresIn,
-              '${user.expiresIn} ${context.l10n.seconds} (${(user.expiresIn / 60).toStringAsFixed(1)} ${context.l10n.minutes})',
+              '${auth.expiresIn} ${context.l10n.seconds} (${(auth.expiresIn / 60).toStringAsFixed(1)} ${context.l10n.minutes})',
             ),
             const Divider(),
             Padding(
@@ -272,7 +272,7 @@ class AccountDetailsSheet extends StatelessWidget {
               context,
               Icons.info_outline,
               context.l10n.type,
-              user.tokenType,
+              auth.tokenType,
             ),
             const Divider(),
             Row(
@@ -293,7 +293,7 @@ class AccountDetailsSheet extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             SelectableText(
-              user.accessToken,
+              auth.accessToken,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontFamily: 'monospace',
@@ -318,7 +318,7 @@ class AccountDetailsSheet extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             SelectableText(
-              user.refreshToken,
+              auth.refreshToken,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontFamily: 'monospace',

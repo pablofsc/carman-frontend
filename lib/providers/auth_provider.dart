@@ -3,27 +3,27 @@ import 'dart:convert' as convert;
 
 import 'package:carman/adapters/api_client.dart';
 import 'package:carman/models/login_request.dart';
-import 'package:carman/models/login_response.dart';
+import 'package:carman/models/auth_response.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/adapters/storage_adapter.dart';
 
 final authProvider =
-    riverpod.AsyncNotifierProvider<AuthNotifier, LoginResponse?>(
+    riverpod.AsyncNotifierProvider<AuthNotifier, AuthResponse?>(
       AuthNotifier.new,
     );
 
-class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
+class AuthNotifier extends riverpod.AsyncNotifier<AuthResponse?> {
   static const int _refreshBufferSeconds = 30;
 
-  Future<LoginResponse?>? _refreshInProgress;
+  Future<AuthResponse?>? _refreshInProgress;
 
   @override
-  Future<LoginResponse?> build() async {
+  Future<AuthResponse?> build() async {
     final jsonData = await StorageAdapter.read('login_response');
     if (jsonData == null) return null;
 
-    return LoginResponse.fromJson(convert.jsonDecode(jsonData));
+    return AuthResponse.fromJson(convert.jsonDecode(jsonData));
   }
 
   Future<bool> login(String username, String password) async {
@@ -83,7 +83,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     };
   }
 
-  Future<LoginResponse?> _refreshToken() async {
+  Future<AuthResponse?> _refreshToken() async {
     _refreshInProgress ??= (() async {
       try {
         final user = state.value;
@@ -107,7 +107,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     return _refreshInProgress;
   }
 
-  Future<LoginResponse?> _sendReqLogin(String username, String password) async {
+  Future<AuthResponse?> _sendReqLogin(String username, String password) async {
     final request = LoginRequest(username: username, password: password);
 
     final response = await ApiClient.post(
@@ -117,7 +117,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     );
 
     if (response.statusCode == 200) {
-      return LoginResponse.fromJson(convert.jsonDecode(response.body));
+      return AuthResponse.fromJson(convert.jsonDecode(response.body));
     }
 
     if (response.statusCode == 401) throw 'Invalid username or password';
@@ -125,7 +125,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     throw Exception('Login failed: ${response.statusCode}');
   }
 
-  Future<LoginResponse?> _sendReqRegister(
+  Future<AuthResponse?> _sendReqRegister(
     String username,
     String password,
   ) async {
@@ -138,7 +138,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return LoginResponse.fromJson(convert.jsonDecode(response.body));
+      return AuthResponse.fromJson(convert.jsonDecode(response.body));
     }
 
     if (response.statusCode == 409) {
@@ -148,7 +148,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     throw Exception('Register failed: ${response.statusCode}');
   }
 
-  Future<LoginResponse?> _sendReqRefresh(String refreshToken) async {
+  Future<AuthResponse?> _sendReqRefresh(String refreshToken) async {
     final response = await ApiClient.post(
       '/auth/refresh',
       headers: {'Content-Type': 'application/json'},
@@ -156,7 +156,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     );
 
     if (response.statusCode == 200) {
-      return LoginResponse.fromJson(convert.jsonDecode(response.body));
+      return AuthResponse.fromJson(convert.jsonDecode(response.body));
     }
 
     if (response.statusCode == 401 || response.statusCode == 403) {
@@ -173,7 +173,7 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
     // no need to invalidate selectedVehicleProvider since it watches vehiclesProvider
   }
 
-  Future<void> _persist(LoginResponse response) async {
+  Future<void> _persist(AuthResponse response) async {
     await StorageAdapter.write(
       'login_response',
       convert.jsonEncode(response.toJson()),

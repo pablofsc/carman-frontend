@@ -17,12 +17,12 @@ class UserNotifier extends riverpod.AsyncNotifier<User?> {
   Future<User?> build() async {
     ref.listen(authProvider, (previous, next) {
       // Only react to identity changes (login/logout), not token refreshes
-      final prevUserId = previous?.value?.userId;
-      final nextUserId = next.value?.userId;
+      final prevUserId = previous?.value?.user.id;
+      final nextUserId = next.value?.user.id;
       if (prevUserId == nextUserId) return;
 
       if (next.value != null) {
-        final user = User.fromLoginResponse(next.value!);
+        final user = next.value!.user;
         state = riverpod.AsyncValue.data(user);
         _persistLocally(user);
       } else {
@@ -39,7 +39,7 @@ class UserNotifier extends riverpod.AsyncNotifier<User?> {
 
     // Fall back to user data from the auth response (e.g. on first login restore)
     final auth = ref.read(authProvider).value;
-    if (auth != null) return User.fromLoginResponse(auth);
+    if (auth != null) return auth.user;
 
     return null;
   }

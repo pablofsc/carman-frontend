@@ -1,4 +1,3 @@
-import 'login_response.dart';
 import 'user_vehicle_rel.dart';
 
 class User {
@@ -37,17 +36,6 @@ class User {
     );
   }
 
-  factory User.fromLoginResponse(LoginResponse response) {
-    return User(
-      id: response.userId,
-      createdAt: response.generatedAt,
-      modifiedAt: response.generatedAt,
-      username: response.username,
-      selectedLanguage: response.selectedLanguage,
-      selectedCurrency: response.selectedCurrency,
-      selectedTheme: response.selectedTheme,
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {

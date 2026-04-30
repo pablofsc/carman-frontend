@@ -1,40 +1,30 @@
-class LoginResponse {
+import 'package:carman/models/user.dart';
+
+class AuthResponse {
   final String accessToken;
   final String refreshToken;
   final String tokenType;
   final int expiresIn;
   final DateTime generatedAt;
-  final String userId;
-  final String username;
-  final String? selectedLanguage;
-  final String? selectedCurrency;
-  final String? selectedTheme;
+  final User user;
 
-  LoginResponse({
+  AuthResponse({
     required this.accessToken,
     required this.refreshToken,
     required this.tokenType,
     required this.expiresIn,
     required this.generatedAt,
-    required this.userId,
-    required this.username,
-    this.selectedLanguage,
-    this.selectedCurrency,
-    this.selectedTheme,
+    required this.user,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    return LoginResponse(
+  factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    return AuthResponse(
       accessToken: json['accessToken'] as String,
       refreshToken: json['refreshToken'] as String,
       tokenType: json['tokenType'] as String,
       expiresIn: json['expiresIn'] as int,
       generatedAt: DateTime.parse(json['generatedAt']),
-      userId: json['userId'] as String,
-      username: json['username'] as String,
-      selectedLanguage: json['selectedLanguage'],
-      selectedCurrency: json['selectedCurrency'],
-      selectedTheme: json['selectedTheme'],
+      user: User.fromJson(json['user'] as Map<String, dynamic>),
     );
   }
 
@@ -45,11 +35,7 @@ class LoginResponse {
       'tokenType': tokenType,
       'expiresIn': expiresIn,
       'generatedAt': generatedAt.toIso8601String(),
-      'userId': userId,
-      'username': username,
-      'selectedLanguage': selectedLanguage,
-      'selectedCurrency': selectedCurrency,
-      'selectedTheme': selectedTheme,
+      'user': user.toJson(),
     };
   }
 

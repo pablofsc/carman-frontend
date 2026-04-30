@@ -43,8 +43,8 @@ class _SettingsPageState extends riverpod.ConsumerState<SettingsPage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) =>
             Center(child: Text('${context.l10n.error}: $error')),
-        data: (user) {
-          if (user == null) {
+        data: (auth) {
+          if (auth == null) {
             return Center(child: Text(context.l10n.noUserDataFound));
           }
 
@@ -136,7 +136,7 @@ class _SettingsPageState extends riverpod.ConsumerState<SettingsPage> {
               const SizedBox(height: 8),
               
               OutlinedButton.icon(
-                onPressed: () => AccountDetailsSheet.show(context, user),
+                onPressed: () => AccountDetailsSheet.show(context, auth),
                 icon: const Icon(Icons.account_circle_outlined),
                 label: Text(context.l10n.accountDetails),
                 style: OutlinedButton.styleFrom(
