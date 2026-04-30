@@ -8,6 +8,7 @@ class LoginResponse {
   final String username;
   final String? selectedLanguage;
   final String? selectedCurrency;
+  final String? selectedTheme;
 
   LoginResponse({
     required this.accessToken,
@@ -19,6 +20,7 @@ class LoginResponse {
     required this.username,
     this.selectedLanguage,
     this.selectedCurrency,
+    this.selectedTheme,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class LoginResponse {
       username: json['username'] as String,
       selectedLanguage: json['selectedLanguage'],
       selectedCurrency: json['selectedCurrency'],
+      selectedTheme: json['selectedTheme'],
     );
   }
 
@@ -46,6 +49,7 @@ class LoginResponse {
       'username': username,
       'selectedLanguage': selectedLanguage,
       'selectedCurrency': selectedCurrency,
+      'selectedTheme': selectedTheme,
     };
   }
 

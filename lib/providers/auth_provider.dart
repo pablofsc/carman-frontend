@@ -8,6 +8,7 @@ import 'package:carman/providers/events_provider.dart';
 import 'package:carman/providers/vehicles_provider.dart';
 import 'package:carman/adapters/storage_adapter.dart';
 
+// this has become a mega-provider. most of its functionality should be moved to a UserProvider or SettingsProvider
 final authProvider =
     riverpod.AsyncNotifierProvider<AuthNotifier, LoginResponse?>(
       AuthNotifier.new,
@@ -178,5 +179,26 @@ class AuthNotifier extends riverpod.AsyncNotifier<LoginResponse?> {
       'login_response',
       convert.jsonEncode(response.toJson()),
     );
+  }
+
+  Future<void> updateSelectedTheme(String themeKey) async {
+    final user = state.value;
+    if (user == null) return;
+
+    final updated = LoginResponse(
+      accessToken: user.accessToken,
+      refreshToken: user.refreshToken,
+      tokenType: user.tokenType,
+      expiresIn: user.expiresIn,
+      generatedAt: user.generatedAt,
+      userId: user.userId,
+      username: user.username,
+      selectedLanguage: user.selectedLanguage,
+      selectedCurrency: user.selectedCurrency,
+      selectedTheme: themeKey,
+    );
+
+    state = riverpod.AsyncValue.data(updated);
+    await _persist(updated);
   }
 }
