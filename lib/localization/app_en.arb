@@ -121,5 +121,6 @@
   "theme": "Theme",
   "currency": "Currency",
   "settings": "Settings",
-  "changeCurrencyInSettings": "You can change your default currency in the settings page"
+  "changeCurrencyInSettings": "You can change your default currency in the settings page",
+  "accountDetails": "Account Details"
 }
