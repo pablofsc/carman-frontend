@@ -4,10 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
-import 'package:carman/pages/register_page.dart';
 
 class LoginPage extends riverpod.ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  final VoidCallback? onSignUpTap;
+
+  const LoginPage({super.key, this.onSignUpTap});
 
   @override
   riverpod.ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -188,14 +189,7 @@ class _LoginPageState extends riverpod.ConsumerState<LoginPage> {
                       children: [
                         Text(context.l10n.noAccountQuestion),
                         TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegisterPage(),
-                              ),
-                            );
-                          },
+                          onPressed: widget.onSignUpTap,
                           style: TextButton.styleFrom(
                             tapTargetSize: MaterialTapTargetSize.padded,
                             textStyle: const TextStyle(
