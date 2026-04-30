@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/adapters/api_client.dart';
 import 'package:carman/adapters/storage_adapter.dart';
-import 'package:carman/providers/auth_provider.dart';
+import 'package:carman/providers/user_provider.dart';
 
 const _storageKey = 'selected_currency';
 
@@ -42,7 +41,7 @@ final currencyProvider = riverpod.NotifierProvider<CurrencyNotifier, String>(
 class CurrencyNotifier extends riverpod.Notifier<String> {
   @override
   String build() {
-    ref.listen(authProvider, (previous, next) {
+    ref.listen(userProvider, (previous, next) {
       final currency = next.value?.selectedCurrency;
       if (currency != null) _setFrontendCurrency(currency);
     });
@@ -64,18 +63,6 @@ class CurrencyNotifier extends riverpod.Notifier<String> {
 
   Future<void> setCurrency(String currencyCode) async {
     _setFrontendCurrency(currencyCode);
-
-    try {
-      final headers = await ref.read(authProvider.notifier).getHeaders();
-
-      if (headers.containsKey('Authorization')) {
-        await ApiClient.put(
-          '/users/selected-currency?code=$currencyCode',
-          headers: headers,
-        );
-      }
-    } catch (_) {
-      // Backend sync failure is non-critical
-    }
+    ref.read(userProvider.notifier).updateCurrency(currencyCode);
   }
 }
