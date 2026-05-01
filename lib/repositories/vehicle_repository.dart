@@ -1,19 +1,12 @@
-import 'dart:convert' as convert;
-
-import 'package:carman/adapters/api_client.dart';
+import 'package:carman/adapters/backend_adapter.dart';
 import 'package:carman/models/vehicle.dart';
 
 class VehicleRepository {
-  static List<Vehicle> _parseVehicles(String body) {
-    final List<dynamic> data = convert.jsonDecode(body);
-    return data.map((json) => Vehicle.fromJson(json)).toList();
-  }
-
   static Future<Vehicle?> createVehicleFromInstance(
     Vehicle vehicle,
     Map<String, String> headers,
   ) async {
-    return createVehicle(
+    return BackendAdapter.createVehicle(
       type: vehicle.type,
       make: vehicle.make,
       model: vehicle.model,
@@ -29,115 +22,43 @@ class VehicleRepository {
     required String year,
     required Map<String, String> headers,
   }) async {
-    final body = convert.jsonEncode({
-      'type': type,
-      'make': make,
-      'model': model,
-      'year': year,
-    });
-
-    final response = await ApiClient.post(
-      '/vehicles',
+    return BackendAdapter.createVehicle(
+      type: type,
+      make: make,
+      model: model,
+      year: year,
       headers: headers,
-      body: body,
     );
-
-    if (response.statusCode == 201) {
-      return Vehicle.fromResponseBody(response.body);
-    }
-
-    throw Exception('Failed to create vehicle: ${response.statusCode}');
   }
 
   static Future<List<Vehicle>> getAllVehicles(
     Map<String, String> headers,
   ) async {
-    final response = await ApiClient.get(
-      '/vehicles',
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      return _parseVehicles(response.body);
-    }
-
-    throw Exception('Failed to fetch vehicles: ${response.statusCode}');
+    return BackendAdapter.getAllVehicles(headers);
   }
 
   static Future<Vehicle> getVehicleById(
     String id,
     Map<String, String> headers,
   ) async {
-    final response = await ApiClient.get(
-      '/vehicles/$id',
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      return Vehicle.fromResponseBody(response.body);
-    }
-
-    if (response.statusCode == 404) {
-      throw Exception('Vehicle not found');
-    }
-
-    throw Exception('Failed to fetch vehicle: ${response.statusCode}');
+    return BackendAdapter.getVehicleById(id, headers);
   }
 
   static Future<void> deleteVehicle(
     String id,
     Map<String, String> headers,
   ) async {
-    final response = await ApiClient.delete(
-      '/vehicles/$id',
-      headers: headers,
-    );
-
-    if (response.statusCode == 204) {
-      return;
-    }
-
-    if (response.statusCode == 404) {
-      throw Exception('Vehicle not found');
-    }
-
-    throw Exception('Failed to delete vehicle: ${response.statusCode}');
+    return BackendAdapter.deleteVehicle(id, headers);
   }
 
   static Future<Vehicle?> getSelected(Map<String, String> headers) async {
-    // TODO: maybe move this to a "UserRepository"?
-
-    final response = await ApiClient.get(
-      '/users/selected-vehicle',
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      return Vehicle.fromResponseBody(response.body);
-    }
-
-    if (response.statusCode == 204) {
-      return null;
-    }
-
-    throw Exception('Failed to fetch selected vehicle: ${response.statusCode}');
+    return BackendAdapter.getSelectedVehicle(headers);
   }
 
   static Future<void> setSelected(
     String id,
     Map<String, String> headers,
   ) async {
-    final response = await ApiClient.put(
-      '/users/selected-vehicle?id=$id',
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      return;
-    }
-
-    throw Exception(
-      'Failed to update selected vehicle: ${response.statusCode}',
-    );
+    return BackendAdapter.setSelectedVehicle(id, headers);
   }
 }
