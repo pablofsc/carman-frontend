@@ -122,5 +122,9 @@
   "currency": "Currency",
   "settings": "Settings",
   "changeCurrencyInSettings": "You can change your default currency in the settings page",
-  "accountDetails": "Account Details"
+  "accountDetails": "Account Details",
+  "setUpPreferences": "Set up your preferences",
+  "setUpPreferencesWelcome": "Welcome! Let's configure your preferences.",
+  "setUpPreferencesSubtitle": "You can always change these later in the settings page.",
+  "continueButton": "Continue"
 }

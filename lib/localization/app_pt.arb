@@ -116,5 +116,9 @@
   "currency": "Moeda",
   "settings": "Configurações",
   "changeCurrencyInSettings": "Você pode alterar sua moeda padrão nas configurações",
-  "accountDetails": "Detalhes da Conta"
+  "accountDetails": "Detalhes da Conta",
+  "setUpPreferences": "Configure suas preferências",
+  "setUpPreferencesWelcome": "Bem-vindo! Vamos configurar suas preferências.",
+  "setUpPreferencesSubtitle": "Você pode alterar estas opções a qualquer momento nas configurações.",
+  "continueButton": "Continuar"
 }

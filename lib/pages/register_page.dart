@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/pages/setup_page.dart';
 
 class RegisterPage extends riverpod.ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -34,7 +35,10 @@ class _RegisterPageState extends riverpod.ConsumerState<RegisterPage> {
       if (!mounted) return;
 
       if (success) {
-        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const SetupPage()),
+        );
       } else {
         _showRegisterErrorDialog(ref.read(authProvider).error.toString());
       }
