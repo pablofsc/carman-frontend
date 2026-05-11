@@ -320,6 +320,18 @@ class EventDetailsSheet extends StatelessWidget {
                 refuel.gasStation!,
               ),
             ],
+            if (refuel.fuelType != null ||
+                refuel.fuelAmount != null ||
+                refuel.gasStation != null)
+              const Divider(),
+            _buildInfoRow(
+              context,
+              Icons.check_circle_outline,
+              context.l10n.fullTank,
+              refuel.fullTank
+                  ? context.l10n.fullTankYes
+                  : context.l10n.fullTankNo,
+            ),
           ],
         ),
       ),

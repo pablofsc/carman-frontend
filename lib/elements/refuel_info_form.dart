@@ -46,6 +46,7 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
   final _literPriceController = TextEditingController();
   final _totalCostController = TextEditingController();
   final _gasStationController = TextEditingController();
+  bool _fullTank = false;
   String? _activeField;
   bool _isCalculating = false;
 
@@ -93,6 +94,8 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
     if (info.gasStation != null) {
       _gasStationController.text = info.gasStation!;
     }
+
+    _fullTank = info.fullTank;
   }
 
   void _onFieldChanged(String field) {
@@ -143,6 +146,7 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
       gasStation: _gasStationController.text.isEmpty
           ? null
           : _gasStationController.text,
+      fullTank: _fullTank,
     );
   }
 
@@ -163,6 +167,17 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
           ],
         ),
         const SizedBox(height: 24),
+        SwitchListTile.adaptive(
+          title: Text(context.l10n.fullTank),
+          value: _fullTank,
+          onChanged: (value) {
+            setState(() {
+              _fullTank = value;
+            });
+          },
+          contentPadding: EdgeInsets.zero,
+        ),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
