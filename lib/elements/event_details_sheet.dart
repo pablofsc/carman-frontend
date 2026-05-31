@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
 import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/providers/events_provider.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/pages/create_event_page.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
 
-class EventDetailsSheet extends StatelessWidget {
-  final Event event;
+class EventDetailsSheet extends riverpod.ConsumerWidget {
+  final String eventId;
 
-  const EventDetailsSheet({super.key, required this.event});
+  const EventDetailsSheet({super.key, required this.eventId});
 
   IconData _getEventIcon(String? type) {
     if (type == null) return Icons.event;
@@ -33,7 +35,13 @@ class EventDetailsSheet extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
+    final event = ref.watch(eventsProvider).asData?.value
+        .where((e) => e.id == eventId)
+        .firstOrNull;
+
+    if (event == null) return const SizedBox.shrink();
+
     final theme = Theme.of(context);
 
     return DraggableScrollableSheet(
@@ -120,15 +128,15 @@ class EventDetailsSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     const SizedBox(height: 8),
-                    _buildInfoCard(context, theme),
+                    _buildInfoCard(context, theme, event),
                     if (event.description != null &&
                         event.description!.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      _buildDescriptionCard(context, theme),
+                      _buildDescriptionCard(context, theme, event),
                     ],
                     if (event.refuelInfo != null) ...[
                       const SizedBox(height: 16),
-                      _buildRefuelCard(context, theme),
+                      _buildRefuelCard(context, theme, event),
                     ],
                     const SizedBox(height: 16),
                   ],
@@ -141,7 +149,7 @@ class EventDetailsSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, ThemeData theme) {
+  Widget _buildInfoCard(BuildContext context, ThemeData theme, Event event) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -238,7 +246,7 @@ class EventDetailsSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDescriptionCard(BuildContext context, ThemeData theme) {
+  Widget _buildDescriptionCard(BuildContext context, ThemeData theme, Event event) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -269,7 +277,7 @@ class EventDetailsSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildRefuelCard(BuildContext context, ThemeData theme) {
+  Widget _buildRefuelCard(BuildContext context, ThemeData theme, Event event) {
     final refuel = event.refuelInfo!;
     return Card(
       child: Padding(

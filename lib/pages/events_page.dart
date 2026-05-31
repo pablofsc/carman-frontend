@@ -137,7 +137,7 @@ class _EventListItem extends StatelessWidget {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            builder: (context) => EventDetailsSheet(event: event),
+            builder: (context) => EventDetailsSheet(eventId: event.id),
           );
         },
         onLongPress: () => DeleteEventDialog.show(context, event),
