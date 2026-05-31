@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/utils/currency_utils.dart';
+import 'package:carman/utils/icon_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/models/event.dart';
@@ -13,36 +15,27 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
 
   const EventDetailsSheet({super.key, required this.eventId});
 
-  IconData _getEventIcon(String? type) {
-    if (type == null) return Icons.event;
-    switch (type.toLowerCase()) {
-      case 'maintenance':
-        return Icons.build;
-      case 'refuel':
-        return Icons.local_gas_station;
-      case 'repair':
-        return Icons.car_repair;
-      case 'service':
-        return Icons.settings;
-      default:
-        return Icons.event;
-    }
-  }
-
-  String _formatDateTime(DateTime dt) {
-    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} '
-        '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+  String _formatDateTime(BuildContext context, DateTime dt) {
+    return intl.DateFormat.yMMMd(
+      Localizations.localeOf(context).toString(),
+    ).add_Hms().format(dt);
   }
 
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
-    final event = ref.watch(eventsProvider).asData?.value
+    final event = ref
+        .watch(eventsProvider)
+        .asData
+        ?.value
         .where((e) => e.id == eventId)
         .firstOrNull;
 
     if (event == null) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
+
+    final eventColor =
+        IconUtils.getEventColor(event) ?? theme.colorScheme.primary;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -60,11 +53,11 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundColor: eventColor.withValues(alpha: 0.15),
                       child: Icon(
-                        _getEventIcon(event.type),
+                        IconUtils.getEventIcon(event),
                         size: 20,
-                        color: theme.colorScheme.onPrimaryContainer,
+                        color: eventColor,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -166,7 +159,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
               context,
               Icons.calendar_today,
               context.l10n.createdAt,
-              _formatDateTime(event.createdAt),
+              _formatDateTime(context, event.createdAt),
             ),
             if (event.occurredAt != null) ...[
               const Divider(),
@@ -174,7 +167,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                 context,
                 Icons.event_available,
                 context.l10n.occurredAt,
-                _formatDateTime(event.occurredAt!),
+                _formatDateTime(context, event.occurredAt!),
               ),
             ],
             if (event.modifiedAt != null) ...[
@@ -183,7 +176,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                 context,
                 Icons.edit_calendar,
                 context.l10n.modifiedAt,
-                _formatDateTime(event.modifiedAt!),
+                _formatDateTime(context, event.modifiedAt!),
               ),
             ],
             if (event.odometer != null) ...[
@@ -202,7 +195,10 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                 context,
                 Icons.attach_money,
                 context.l10n.cost,
-                CurrencyUtils.format(event.costValueMinor!, event.costCurrencyCode!),
+                CurrencyUtils.format(
+                  event.costValueMinor!,
+                  event.costCurrencyCode!,
+                ),
               ),
             ],
           ],
@@ -246,7 +242,11 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
     );
   }
 
-  Widget _buildDescriptionCard(BuildContext context, ThemeData theme, Event event) {
+  Widget _buildDescriptionCard(
+    BuildContext context,
+    ThemeData theme,
+    Event event,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
