@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
+import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/elements/expandable_fab.dart';
 import 'package:carman/extensions/l10n_extension.dart';
@@ -94,6 +95,54 @@ class EventsPage extends riverpod.ConsumerWidget {
                     itemCount: events.length,
                     itemBuilder: (context, index) {
                       final event = events[index];
+                      final date = event.occurredAt ?? event.createdAt;
+
+                      // Check if we need to show a month header before this item
+                      bool showHeader = false;
+                      if (index == 0) {
+                        showHeader = true;
+                      } else {
+                        final prevEvent = events[index - 1];
+                        final prevDate =
+                            prevEvent.occurredAt ?? prevEvent.createdAt;
+                        if (prevDate.year != date.year ||
+                            prevDate.month != date.month) {
+                          showHeader = true;
+                        }
+                      }
+
+                      if (showHeader) {
+                        final headerText = intl.DateFormat.yMMMM(
+                          Localizations.localeOf(context).toString(),
+                        ).format(date);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 24,
+                                right: 16,
+                                top: 20,
+                                bottom: 8,
+                              ),
+                              child: Text(
+                                headerText,
+                                style: Theme.of(context).textTheme.titleSmall
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      letterSpacing: 0.5,
+                                    ),
+                              ),
+                            ),
+                            EventListItem(event: event),
+                          ],
+                        );
+                      }
+
                       return EventListItem(event: event);
                     },
                   ),
