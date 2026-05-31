@@ -1,152 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' as services;
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 
-import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/refuel_info.dart';
+import 'package:carman/elements/refuel_values.dart';
 
-class _DecimalInputFormatter extends services.TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (newValue.text.isEmpty) return newValue;
-
-    final pattern = RegExp(r'^\d+\.?\d{0,2}$');
-    if (pattern.hasMatch(newValue.text) || newValue.text == '.') {
-      return newValue;
-    }
-
-    return oldValue;
-  }
-}
-
-class RefuelInfoForm extends StatefulWidget {
-  final ValueChanged<double?>? onTotalCostChanged;
+class RefuelInfoForm extends riverpod.ConsumerStatefulWidget {
+  final void Function({double? total, RefuelInfo? refuelInfo})? onChange;
   final RefuelInfo? initialRefuelInfo;
   final double? initialTotalCost;
-  final String currencyCode;
 
   const RefuelInfoForm({
     super.key,
-    this.onTotalCostChanged,
+    this.onChange,
     this.initialRefuelInfo,
     this.initialTotalCost,
-    this.currencyCode = 'BRL',
   });
 
   @override
-  State<RefuelInfoForm> createState() => RefuelInfoFormState();
+  riverpod.ConsumerState<RefuelInfoForm> createState() => RefuelInfoFormState();
 }
 
-class RefuelInfoFormState extends State<RefuelInfoForm> {
-  final _fuelTypeController = TextEditingController();
-  final _fuelAmountController = TextEditingController();
-  final _literPriceController = TextEditingController();
-  final _totalCostController = TextEditingController();
-  final _gasStationController = TextEditingController();
-  bool _fullTank = false;
-  String? _activeField;
-  bool _isCalculating = false;
+class RefuelInfoFormState extends riverpod.ConsumerState<RefuelInfoForm> {
+  bool _isFullTank = false;
+  double? _amount;
+  double? _total;
 
   @override
   void initState() {
     super.initState();
+    
     final info = widget.initialRefuelInfo;
 
     if (info != null) {
-      _fillRefuelInfo(info);
+      _prefillInputs(info);
     }
-
-    if (widget.initialTotalCost != null) {
-      _totalCostController.text = widget.initialTotalCost!.toStringAsFixed(2);
-    }
-
-    _fuelAmountController.addListener(() => _onFieldChanged('amount'));
-    _literPriceController.addListener(() => _onFieldChanged('price'));
-    _totalCostController.addListener(() => _onFieldChanged('total'));
   }
 
-  @override
-  void dispose() {
-    _fuelTypeController.dispose();
-    _fuelAmountController.dispose();
-    _literPriceController.dispose();
-    _totalCostController.dispose();
-    _gasStationController.dispose();
-    super.dispose();
+  void _prefillInputs(RefuelInfo info) {
+    _isFullTank = info.fullTank;
   }
 
-  void _fillRefuelInfo(RefuelInfo info) {
-    if (info.fuelType != null) _fuelTypeController.text = info.fuelType!;
-
-    if (info.fuelAmount != null) {
-      _fuelAmountController.text = info.fuelAmount!.toStringAsFixed(2);
-    }
-
-    if (info.fuelUnitPrice != null) {
-      _literPriceController.text = (info.fuelUnitPrice! / 100).toStringAsFixed(
-        2,
-      );
-    }
-
-    if (info.gasStation != null) {
-      _gasStationController.text = info.gasStation!;
-    }
-
-    _fullTank = info.fullTank;
-  }
-
-  void _onFieldChanged(String field) {
-    if (_isCalculating) return;
-    _activeField = field;
-    _recalculate();
-  }
-
-  void _recalculate() {
-    final amount = double.tryParse(_fuelAmountController.text);
-    final price = double.tryParse(_literPriceController.text);
-    final total = double.tryParse(_totalCostController.text);
-
-    _isCalculating = true;
-
-    if (_activeField == 'amount' || _activeField == 'price') {
-      if (amount != null && price != null) {
-        _totalCostController.text = (amount * price).toStringAsFixed(2);
-      }
-    } else if (_activeField == 'total') {
-      if (total != null && price != null && price != 0) {
-        _fuelAmountController.text = (total / price).toStringAsFixed(2);
-      } else if (total != null && amount != null && amount != 0) {
-        _literPriceController.text = (total / amount).toStringAsFixed(2);
-      }
-    }
-
-    _isCalculating = false;
-
-    final computedTotal = double.tryParse(_totalCostController.text);
-    widget.onTotalCostChanged?.call(computedTotal);
-  }
-
-  double? get totalCost => double.tryParse(_totalCostController.text);
-
-  RefuelInfo? getRefuelInfo() {
+  RefuelInfo? readInputs() {
     return RefuelInfo(
-      fuelType: _fuelTypeController.text.isEmpty
-          ? null
-          : _fuelTypeController.text,
-      fuelAmount: _fuelAmountController.text.isEmpty
-          ? null
-          : double.tryParse(_fuelAmountController.text),
+      fuelType: widget.initialRefuelInfo?.fuelType,
+      fuelAmount: _amount,
       fuelAmountUnit: 'L',
-      fuelUnitPrice: double.tryParse(_literPriceController.text) != null
-          ? ((double.parse(_literPriceController.text)) * 100).toInt()
-          : null,
-      gasStation: _gasStationController.text.isEmpty
-          ? null
-          : _gasStationController.text,
-      fullTank: _fullTank,
+      fullTank: _isFullTank,
     );
   }
 
@@ -156,6 +56,7 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 24),
+
         Row(
           children: [
             const Expanded(child: Divider()),
@@ -166,94 +67,29 @@ class RefuelInfoFormState extends State<RefuelInfoForm> {
             const Expanded(child: Divider()),
           ],
         ),
-        const SizedBox(height: 24),
+
         SwitchListTile.adaptive(
           title: Text(context.l10n.fullTank),
-          value: _fullTank,
-          onChanged: (value) {
-            setState(() {
-              _fullTank = value;
-            });
-          },
+          value: _isFullTank,
           contentPadding: EdgeInsets.zero,
+          onChanged: (isFullTank) {
+            setState(() {
+              _isFullTank = isFullTank;
+            });
+            widget.onChange?.call(total: _total, refuelInfo: readInputs());
+          },
         ),
+
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _literPriceController,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.literPrice,
-                        border: const OutlineInputBorder(),
-                        prefixText: '${CurrencyUtils.symbol(widget.currencyCode)} ',
-                      ),
-                      keyboardType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [_DecimalInputFormatter()],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 14,
-                    ),
-                    child: Text(
-                      '×',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _fuelAmountController,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.fuelAmount,
-                        border: const OutlineInputBorder(),
-                        suffixText: 'L',
-                      ),
-                      keyboardType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [_DecimalInputFormatter()],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 14,
-                    ),
-                    child: Text(
-                      '=',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _totalCostController,
-                      decoration: InputDecoration(
-                        labelText: context.l10n.totalCost,
-                        border: const OutlineInputBorder(),
-                        prefixText: '${CurrencyUtils.symbol(widget.currencyCode)} ',
-                      ),
-                      keyboardType: TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [_DecimalInputFormatter()],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+
+        RefuelValues(
+          onChange: ({amount, total}) {
+            _amount = amount;
+            _total = total;
+            widget.onChange?.call(total: total, refuelInfo: readInputs());
+          },
+          initialFuelAmount: widget.initialRefuelInfo?.fuelAmount,
+          initialCostTotal: widget.initialTotalCost,
         )
       ],
     );

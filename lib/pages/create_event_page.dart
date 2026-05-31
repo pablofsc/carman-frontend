@@ -23,6 +23,7 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
     if (newValue.text.isEmpty) return newValue;
 
     final pattern = RegExp(r'^\d+\.?\d{0,2}$');
+    
     if (pattern.hasMatch(newValue.text) || newValue.text == '.') {
       return newValue;
     }
@@ -44,14 +45,16 @@ class CreateEventPage extends riverpod.ConsumerStatefulWidget {
 
 class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   final _formKey = GlobalKey<FormState>();
-  String? _selectedType;
+
   final _descriptionController = TextEditingController();
   final _odometerController = TextEditingController();
   final _costValueController = TextEditingController();
   final _currencyCodeController = TextEditingController();
-  final _refuelInfoFormKey = GlobalKey<RefuelInfoFormState>();
   final _occurredDateController = TextEditingController();
   final _occurredTimeController = TextEditingController();
+
+  String? _selectedType;
+  RefuelInfo? _refuelInfo;
   DateTime? _occurredAt;
 
   bool _isSubmitting = false;
@@ -86,6 +89,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   void _fillEditingEvent(Event e) {
     _selectedType = e.type;
     _descriptionController.text = e.description ?? '';
+
     if (e.occurredAt != null) {
       _occurredAt = e.occurredAt;
       _occurredDateController.text = _formatDate(e.occurredAt!);
@@ -103,6 +107,8 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     if (e.costValueMinor != null) {
       _costValueController.text = (e.costValueMinor! / 100).toStringAsFixed(2);
     }
+
+    _refuelInfo = e.refuelInfo;
   }
 
   @override
@@ -192,9 +198,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     });
 
     try {
-      final refuelInfo = _selectedType == 'Refuel'
-          ? _refuelInfoFormKey.currentState?.getRefuelInfo()
-          : null;
+      final refuelInfo = _selectedType == 'Refuel' ? _refuelInfo : null;
 
       if (widget.editingEvent != null) {
         await _updateEvent(refuelInfo);
@@ -422,13 +426,13 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
 
             if (_selectedType == 'Refuel')
               RefuelInfoForm(
-                key: _refuelInfoFormKey,
                 initialRefuelInfo: widget.editingEvent?.refuelInfo,
                 initialTotalCost: widget.editingEvent?.costValueMinor != null
                     ? widget.editingEvent!.costValueMinor! / 100
                     : null,
-                currencyCode: _currencyCodeController.text,
-                onTotalCostChanged: (total) {
+                onChange: ({total, refuelInfo}) {
+                  _refuelInfo = refuelInfo;
+
                   if (total != null) {
                     _costValueController.text = total.toStringAsFixed(2);
                   } else {
