@@ -95,7 +95,12 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
                               context,
                             ).colorScheme.surfaceContainer,
                           ),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateVehiclePage())),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateVehiclePage(),
+                            ),
+                          ),
                           child: Text(context.l10n.addNewVehicle),
                         ),
                       ),
@@ -131,23 +136,35 @@ class _VehSelState extends riverpod.ConsumerState<VehicleSelector> {
             ? selectedVehicle.displayName.toUpperCase()
             : context.l10n.selectVehicle;
 
-        return TextButton(
-          onPressed: vehicles.isEmpty
-              ? null
-              : () => _showVehicleSelector(context),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.directions_car),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  displayText,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+        return Align(
+          alignment: Alignment.center,
+          widthFactor: 1,
+          child: SizedBox(
+            height: 34,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                minimumSize: Size.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              Icon(Icons.arrow_drop_down),
-            ],
+              onPressed: vehicles.isEmpty
+                  ? null
+                  : () => _showVehicleSelector(context),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.directions_car),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      displayText,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            ),
           ),
         );
       },
