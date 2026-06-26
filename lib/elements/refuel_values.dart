@@ -63,7 +63,7 @@ class RefuelValuesState extends riverpod.ConsumerState<RefuelValues> {
 
     if (widget.initialFuelAmount != null && widget.initialCostTotal != null) {
       _recentFields.add(_Field.amount);
-      _recalculate(_Field.total);
+      _recalculate(_Field.total, notifyParent: false);
     }
   }
 
@@ -76,7 +76,7 @@ class RefuelValuesState extends riverpod.ConsumerState<RefuelValues> {
     super.dispose();
   }
 
-  void _recalculate(_Field modifiedField) {
+  void _recalculate(_Field modifiedField, {bool notifyParent = true}) {
     _recentFields.remove(modifiedField);
 
     final values = {
@@ -122,10 +122,12 @@ class RefuelValuesState extends riverpod.ConsumerState<RefuelValues> {
       }
     }
 
-    widget.onChange?.call(
-      amount: double.tryParse(_amountController.text),
-      total: double.tryParse(_totalController.text),
-    );
+    if (notifyParent) {
+      widget.onChange?.call(
+        amount: double.tryParse(_amountController.text),
+        total: double.tryParse(_totalController.text),
+      );
+    }
   }
 
   Widget _operator(BuildContext context, String symbol) {
