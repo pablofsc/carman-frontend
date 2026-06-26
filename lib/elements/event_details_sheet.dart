@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/utils/currency_utils.dart';
-import 'package:carman/utils/icon_utils.dart';
+import 'package:carman/elements/event_icon.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/models/event.dart';
@@ -35,7 +35,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
     final theme = Theme.of(context);
 
     final eventColor =
-        IconUtils.getEventColor(event) ?? theme.colorScheme.primary;
+        EventIcon.getColor(event) ?? theme.colorScheme.primary;
 
     return DraggableScrollableSheet(
       expand: false,
@@ -55,7 +55,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                       radius: 20,
                       backgroundColor: eventColor.withValues(alpha: 0.15),
                       child: Icon(
-                        IconUtils.getEventIcon(event),
+                        EventIcon.getIcon(event),
                         size: 20,
                         color: eventColor,
                       ),

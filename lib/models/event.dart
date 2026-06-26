@@ -31,6 +31,31 @@ class Event {
     this.refuelInfo,
   });
 
+  factory Event.preview({required String? type, RefuelInfo? refuelInfo}) {
+    return Event(
+      id: '',
+      createdAt: DateTime.now(),
+      vehicle: Vehicle(
+        id: '',
+        type: '',
+        make: '',
+        model: '',
+        year: '',
+        author: null,
+        createdAt: DateTime.now(),
+        modifiedAt: DateTime.now(),
+      ),
+      author: User(
+        id: '',
+        createdAt: DateTime.now(),
+        modifiedAt: DateTime.now(),
+        username: '',
+      ),
+      type: type,
+      refuelInfo: refuelInfo,
+    );
+  }
+
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       id: json['id'],

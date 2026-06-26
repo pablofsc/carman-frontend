@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/utils/currency_utils.dart';
-import 'package:carman/utils/icon_utils.dart';
+import 'package:carman/elements/event_icon.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
@@ -20,7 +20,7 @@ class EventListItem extends StatelessWidget {
         event.description != null && event.description!.isNotEmpty;
 
     final eventColor =
-        IconUtils.getEventColor(event) ?? theme.colorScheme.primary;
+        EventIcon.getColor(event) ?? theme.colorScheme.primary;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -36,7 +36,7 @@ class EventListItem extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: eventColor.withValues(alpha: 0.15),
-          child: Icon(IconUtils.getEventIcon(event), color: eventColor),
+          child: Icon(EventIcon.getIcon(event), color: eventColor),
         ),
         title: Text(
           event.type ?? context.l10n.unknownEventType,

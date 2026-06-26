@@ -9,6 +9,7 @@ import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/refuel_info_form.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
+import 'package:carman/elements/event_icon.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/models/refuel_info.dart';
 import 'package:carman/models/vehicle.dart';
@@ -312,17 +313,18 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.car_rental),
-                title: Text(_selectedVehicle.displayName),
-                subtitle: Text(context.l10n.selectedVehicle),
+            Center(
+              child: EventIcon(
+                event: Event.preview(
+                  type: _selectedType,
+                  refuelInfo: _selectedType == 'Refuel' ? _refuelInfo : null,
+                ),
               ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                const Icon(Icons.event),
+                const Icon(Icons.event_note, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -431,13 +433,15 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                     ? widget.editingEvent!.costValueMinor! / 100
                     : null,
                 onChange: ({total, refuelInfo}) {
-                  _refuelInfo = refuelInfo;
+                  setState(() {
+                    _refuelInfo = refuelInfo;
 
-                  if (total != null) {
-                    _costValueController.text = total.toStringAsFixed(2);
-                  } else {
-                    _costValueController.clear();
-                  }
+                    if (total != null) {
+                      _costValueController.text = total.toStringAsFixed(2);
+                    } else {
+                      _costValueController.clear();
+                    }
+                  });
                 },
               ),
 
