@@ -3,29 +3,33 @@ import 'user_vehicle_rel.dart';
 class User {
   final String id;
   final DateTime createdAt;
-  final DateTime modifiedAt;
+  final DateTime? modifiedAt;
   final String username;
   final UserVehicleRel? selectedVehicle;
   final String? selectedLanguage;
   final String? selectedCurrency;
   final String? selectedTheme;
+  final String? selectedTimezone;
 
   User({
     required this.id,
     required this.createdAt,
-    required this.modifiedAt,
+    this.modifiedAt,
     required this.username,
     this.selectedVehicle,
     this.selectedLanguage,
     this.selectedCurrency,
     this.selectedTheme,
+    this.selectedTimezone,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
       createdAt: DateTime.parse(json['createdAt']),
-      modifiedAt: DateTime.parse(json['modifiedAt']),
+      modifiedAt: json['modifiedAt'] != null
+          ? DateTime.parse(json['modifiedAt'])
+          : null,
       username: json['username'],
       selectedVehicle: json['selectedVehicle'] != null
           ? UserVehicleRel.fromJson(json['selectedVehicle'])
@@ -33,6 +37,7 @@ class User {
       selectedLanguage: json['selectedLanguage'],
       selectedCurrency: json['selectedCurrency'],
       selectedTheme: json['selectedTheme'],
+      selectedTimezone: json['selectedTimezone'],
     );
   }
 
@@ -41,12 +46,13 @@ class User {
     return {
       'id': id,
       'createdAt': createdAt.toIso8601String(),
-      'modifiedAt': modifiedAt.toIso8601String(),
+      'modifiedAt': modifiedAt?.toIso8601String(),
       'username': username,
       'selectedVehicle': selectedVehicle?.toJson(),
       'selectedLanguage': selectedLanguage,
       'selectedCurrency': selectedCurrency,
       'selectedTheme': selectedTheme,
+      'selectedTimezone': selectedTimezone,
     };
   }
 
@@ -59,6 +65,7 @@ class User {
     String? selectedLanguage,
     String? selectedCurrency,
     String? selectedTheme,
+    String? selectedTimezone,
   }) {
     return User(
       id: id ?? this.id,
@@ -69,6 +76,7 @@ class User {
       selectedLanguage: selectedLanguage ?? this.selectedLanguage,
       selectedCurrency: selectedCurrency ?? this.selectedCurrency,
       selectedTheme: selectedTheme ?? this.selectedTheme,
+      selectedTimezone: selectedTimezone ?? this.selectedTimezone,
     );
   }
 }

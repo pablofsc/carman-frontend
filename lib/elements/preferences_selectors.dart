@@ -5,6 +5,7 @@ import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/currency_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
 import 'package:carman/providers/theme_provider.dart';
+import 'package:carman/providers/timezone_provider.dart';
 import 'package:carman/utils/currency_utils.dart';
 
 class PreferencesSelectors extends riverpod.ConsumerWidget {
@@ -88,6 +89,38 @@ class PreferencesSelectors extends riverpod.ConsumerWidget {
               onChanged: (mode) {
                 if (mode != null) {
                   ref.read(themeProvider.notifier).setTheme(mode);
+                }
+              },
+            ),
+          ),
+        ),
+
+        // Timezone Section
+        Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: ListTile(
+            title: Text(context.l10n.timezone),
+            leading: const Icon(Icons.public),
+            trailing: DropdownButton<String>(
+              value: ianaTimezones.contains(ref.watch(timezoneProvider))
+                  ? ref.watch(timezoneProvider)
+                  : null,
+              underline: const SizedBox.shrink(),
+              menuMaxHeight: 320,
+              items: ianaTimezones
+                  .map(
+                    (tz) => DropdownMenuItem(
+                      value: tz,
+                      child: SizedBox(
+                        width: 200,
+                        child: Text(tz, overflow: TextOverflow.ellipsis),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (tz) {
+                if (tz != null) {
+                  ref.read(timezoneProvider.notifier).setTimezone(tz);
                 }
               },
             ),

@@ -169,6 +169,13 @@ class AccountDetailsSheet extends StatelessWidget {
               context.l10n.currency,
               auth.user.selectedCurrency ?? '-',
             ),
+            const Divider(),
+            _infoRow(
+              context,
+              Icons.public,
+              context.l10n.timezone,
+              auth.user.selectedTimezone ?? '-',
+            ),
           ],
         ),
       ),

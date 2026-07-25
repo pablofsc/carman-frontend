@@ -97,6 +97,17 @@ class BackendAdapter {
     );
   }
 
+  static Future<void> setUserSelectedTimezone(
+    String timezoneIana,
+    Map<String, String> headers,
+  ) async {
+    final encodedTz = Uri.encodeQueryComponent(timezoneIana);
+    await ApiClient.put(
+      '/users/selected-timezone?iana=$encodedTz',
+      headers: headers,
+    );
+  }
+
   static Future<List<Event>> getEventsByVehicle(
     String vehicleId,
     Map<String, String> headers,

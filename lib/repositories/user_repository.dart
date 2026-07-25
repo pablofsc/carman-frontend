@@ -21,4 +21,11 @@ class UserRepository {
   ) async {
     await BackendAdapter.setUserSelectedCurrency(currencyCode, headers);
   }
+
+  static Future<void> setSelectedTimezone(
+    String timezoneIana,
+    Map<String, String> headers,
+  ) async {
+    await BackendAdapter.setUserSelectedTimezone(timezoneIana, headers);
+  }
 }
