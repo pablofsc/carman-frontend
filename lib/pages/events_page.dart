@@ -5,6 +5,8 @@ import 'package:intl/intl.dart' as intl;
 import 'package:carman/elements/expandable_fab.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/providers/timezone_provider.dart';
+import 'package:carman/utils/timezone_utils.dart';
 import 'package:carman/pages/create_event_page.dart';
 import 'package:carman/elements/event_list_item.dart';
 
@@ -14,6 +16,8 @@ class EventsPage extends riverpod.ConsumerWidget {
   @override
   Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final eventsAsync = ref.watch(eventsProvider);
+    final timezone = ref.watch(timezoneProvider);
+    
     return Scaffold(
       floatingActionButton: ExpandableFab(
         options: [
@@ -95,7 +99,10 @@ class EventsPage extends riverpod.ConsumerWidget {
                     itemCount: events.length,
                     itemBuilder: (context, index) {
                       final event = events[index];
-                      final date = event.occurredAt ?? event.createdAt;
+                      final date = TimezoneUtils.toZone(
+                        event.occurredAt ?? event.createdAt,
+                        timezone,
+                      );
 
                       // Check if we need to show a month header before this item
                       bool showHeader = false;
@@ -103,8 +110,10 @@ class EventsPage extends riverpod.ConsumerWidget {
                         showHeader = true;
                       } else {
                         final prevEvent = events[index - 1];
-                        final prevDate =
-                            prevEvent.occurredAt ?? prevEvent.createdAt;
+                        final prevDate = TimezoneUtils.toZone(
+                          prevEvent.occurredAt ?? prevEvent.createdAt,
+                          timezone,
+                        );
                         if (prevDate.year != date.year ||
                             prevDate.month != date.month) {
                           showHeader = true;

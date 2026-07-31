@@ -117,6 +117,7 @@
   "yearMustBeBetween": "Deve ser entre {from} e {to}",
   "theme": "Tema",
   "currency": "Moeda",
+  "timezone": "Fuso horário",
   "settings": "Configurações",
   "changeCurrencyInSettings": "Você pode alterar sua moeda padrão nas configurações",
   "accountDetails": "Detalhes da Conta",

@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/currency_provider.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/providers/timezone_provider.dart';
 import 'package:carman/utils/currency_utils.dart';
+import 'package:carman/utils/timezone_utils.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/refuel_info_form.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
@@ -92,9 +94,12 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     _descriptionController.text = e.description ?? '';
 
     if (e.occurredAt != null) {
-      _occurredAt = e.occurredAt;
-      _occurredDateController.text = _formatDate(e.occurredAt!);
-      _occurredTimeController.text = _formatTime(e.occurredAt!);
+      _occurredAt = TimezoneUtils.toZone(
+        e.occurredAt!,
+        ref.read(timezoneProvider),
+      );
+      _occurredDateController.text = _formatDate(_occurredAt!);
+      _occurredTimeController.text = _formatTime(_occurredAt!);
     }
 
     if (e.odometer != null) {
@@ -128,7 +133,10 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
         _selectedType = widget.initialType;
       }
 
-      _occurredAt = DateTime.now();
+      _occurredAt = TimezoneUtils.toZone(
+        DateTime.now(),
+        ref.read(timezoneProvider),
+      );
       _occurredDateController.text = _formatDate(_occurredAt!);
       _occurredTimeController.text = _formatTime(_occurredAt!);
     }
@@ -158,6 +166,19 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
       ? null
       : _currencyCodeController.text;
 
+  DateTime? _occurredAtInSelectedZone() {
+    if (_occurredAt == null) return null;
+
+    return TimezoneUtils.wallClock(
+      ref.read(timezoneProvider),
+      year: _occurredAt!.year,
+      month: _occurredAt!.month,
+      day: _occurredAt!.day,
+      hour: _occurredAt!.hour,
+      minute: _occurredAt!.minute,
+    );
+  }
+
   Future<void> _createEvent(RefuelInfo? refuelInfo) {
     return ref
         .read(eventsProvider.notifier)
@@ -168,7 +189,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
           odometer: _odometer(),
           costValueMinor: _costValueMinor(),
           costCurrencyCode: _currencyCode(),
-          occurredAt: _occurredAt,
+          occurredAt: _occurredAtInSelectedZone(),
           refuelInfo: refuelInfo,
         );
   }
@@ -183,7 +204,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
           odometer: _odometer(),
           costValueMinor: _costValueMinor(),
           costCurrencyCode: _currencyCode(),
-          occurredAt: _occurredAt,
+          occurredAt: _occurredAtInSelectedZone(),
           refuelInfo: refuelInfo,
         );
   }

@@ -123,6 +123,7 @@
   },
   "theme": "Theme",
   "currency": "Currency",
+  "timezone": "Timezone",
   "settings": "Settings",
   "changeCurrencyInSettings": "You can change your default currency in the settings page",
   "accountDetails": "Account Details",

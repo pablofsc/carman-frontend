@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/utils/currency_utils.dart';
+import 'package:carman/utils/timezone_utils.dart';
 import 'package:carman/elements/event_icon.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/providers/events_provider.dart';
+import 'package:carman/providers/timezone_provider.dart';
 import 'package:carman/models/event.dart';
 import 'package:carman/pages/create_event_page.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
@@ -15,10 +17,10 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
 
   const EventDetailsSheet({super.key, required this.eventId});
 
-  String _formatDateTime(BuildContext context, DateTime dt) {
+  String _formatDateTime(BuildContext context, DateTime dt, String timezone) {
     return intl.DateFormat.yMMMd(
       Localizations.localeOf(context).toString(),
-    ).add_Hms().format(dt);
+    ).add_Hms().format(TimezoneUtils.toZone(dt, timezone));
   }
 
   @override
@@ -33,6 +35,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
     if (event == null) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
+    final timezone = ref.watch(timezoneProvider);
 
     final eventColor =
         EventIcon.getColor(event) ?? theme.colorScheme.primary;
@@ -121,7 +124,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     const SizedBox(height: 8),
-                    _buildInfoCard(context, theme, event),
+                    _buildInfoCard(context, theme, event, timezone),
                     if (event.description != null &&
                         event.description!.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -142,7 +145,12 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, ThemeData theme, Event event) {
+  Widget _buildInfoCard(
+    BuildContext context,
+    ThemeData theme,
+    Event event,
+    String timezone,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -159,7 +167,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
               context,
               Icons.calendar_today,
               context.l10n.createdAt,
-              _formatDateTime(context, event.createdAt),
+              _formatDateTime(context, event.createdAt, timezone),
             ),
             if (event.occurredAt != null) ...[
               const Divider(),
@@ -167,7 +175,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                 context,
                 Icons.event_available,
                 context.l10n.occurredAt,
-                _formatDateTime(context, event.occurredAt!),
+                _formatDateTime(context, event.occurredAt!, timezone),
               ),
             ],
             if (event.modifiedAt != null) ...[
@@ -176,7 +184,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                 context,
                 Icons.edit_calendar,
                 context.l10n.modifiedAt,
-                _formatDateTime(context, event.modifiedAt!),
+                _formatDateTime(context, event.modifiedAt!, timezone),
               ),
             ],
             if (event.odometer != null) ...[

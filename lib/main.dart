@@ -7,8 +7,12 @@ import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/providers/locale_provider.dart';
 import 'package:carman/localization/app_localizations.dart';
 import 'package:carman/providers/theme_provider.dart';
+import 'package:timezone/data/latest_all.dart' as tz_data;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  tz_data.initializeTimeZones();
+
   runApp(const riverpod.ProviderScope(child: MyApp()));
 }
 

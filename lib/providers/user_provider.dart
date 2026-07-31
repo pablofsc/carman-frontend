@@ -77,6 +77,17 @@ class UserNotifier extends riverpod.AsyncNotifier<User?> {
     _syncToBackend((headers) => UserRepository.setSelectedCurrency(currencyCode, headers));
   }
 
+  Future<void> updateTimezone(String timezoneIana) async {
+    final current = state.value;
+    if (current == null) return;
+
+    final updated = current.copyWith(selectedTimezone: timezoneIana);
+    state = riverpod.AsyncValue.data(updated);
+    await _persistLocally(updated);
+
+    _syncToBackend((headers) => UserRepository.setSelectedTimezone(timezoneIana, headers));
+  }
+
   Future<void> _syncToBackend(
     Future<void> Function(Map<String, String> headers) call,
   ) async {

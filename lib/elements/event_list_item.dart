@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/utils/currency_utils.dart';
+import 'package:carman/utils/timezone_utils.dart';
 import 'package:carman/elements/event_icon.dart';
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/providers/timezone_provider.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
 import 'package:carman/elements/event_details_sheet.dart';
 
-class EventListItem extends StatelessWidget {
+class EventListItem extends riverpod.ConsumerWidget {
   final Event event;
 
   const EventListItem({super.key, required this.event});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, riverpod.WidgetRef ref) {
     final theme = Theme.of(context);
     final hasDescription =
         event.description != null && event.description!.isNotEmpty;
@@ -70,7 +73,12 @@ class EventListItem extends StatelessWidget {
                 Text(
                   intl.DateFormat.yMMMd(
                     Localizations.localeOf(context).toString(),
-                  ).add_Hm().format(event.occurredAt ?? event.createdAt),
+                  ).add_Hm().format(
+                    TimezoneUtils.toZone(
+                      event.occurredAt ?? event.createdAt,
+                      ref.watch(timezoneProvider),
+                    ),
+                  ),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
