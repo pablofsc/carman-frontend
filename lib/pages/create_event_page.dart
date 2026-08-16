@@ -133,10 +133,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
         _selectedType = widget.initialType;
       }
 
-      _occurredAt = TimezoneUtils.toZone(
-        DateTime.now(),
-        ref.read(timezoneProvider),
-      );
+      _occurredAt = DateTime.now();
       _occurredDateController.text = _formatDate(_occurredAt!);
       _occurredTimeController.text = _formatTime(_occurredAt!);
     }
