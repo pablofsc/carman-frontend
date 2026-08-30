@@ -4,6 +4,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'package:carman/elements/expandable_fab.dart';
 import 'package:carman/extensions/l10n_extension.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/providers/events_provider.dart';
 import 'package:carman/providers/timezone_provider.dart';
 import 'package:carman/utils/timezone_utils.dart';
@@ -29,7 +30,7 @@ class EventsPage extends riverpod.ConsumerWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      const CreateEventPage(initialType: 'Refuel'),
+                      const CreateEventPage(initialType: EventTypeEnum.refuel),
                 ),
               );
             },

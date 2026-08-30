@@ -3,6 +3,7 @@ import 'dart:convert' as convert;
 import 'package:carman/infrastructure/api_client.dart';
 import 'package:carman/models/auth_response.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/models/login_request.dart';
 import 'package:carman/models/refuel_info.dart';
 import 'package:carman/models/vehicle.dart';
@@ -144,7 +145,7 @@ class BackendAdapter {
 
   static Future<Event> createEvent({
     required String vehicleId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,
@@ -155,7 +156,7 @@ class BackendAdapter {
   }) async {
     final body = convert.jsonEncode({
       'vehicle': {'id': vehicleId},
-      'type': type,
+      'type': type.value,
       'description': description,
       'odometer': odometer,
       'costValueMinor': costValueMinor,
@@ -180,7 +181,7 @@ class BackendAdapter {
 
   static Future<Event> updateEvent({
     required String eventId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,
@@ -190,7 +191,7 @@ class BackendAdapter {
     required Map<String, String> headers,
   }) async {
     final body = convert.jsonEncode({
-      'type': type,
+      'type': type.value,
       'description': description,
       'odometer': odometer,
       'costValueMinor': costValueMinor,

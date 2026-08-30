@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 
 class EventIcon extends StatelessWidget {
   static const double _radius = 20;
@@ -13,17 +14,17 @@ class EventIcon extends StatelessWidget {
     final type = event.type;
     if (type == null) return Icons.event;
 
-    switch (type.toLowerCase()) {
-      case 'maintenance':
+    switch (type) {
+      case EventTypeEnum.maintenance:
         return Icons.build;
-      case 'refuel':
+      case EventTypeEnum.refuel:
         final isFullTank = event.refuelInfo?.fullTank ?? false;
         return isFullTank
             ? Icons.local_gas_station
             : Icons.local_gas_station_outlined;
-      case 'repair':
+      case EventTypeEnum.repair:
         return Icons.car_repair;
-      case 'service':
+      case EventTypeEnum.service:
         return Icons.settings;
       default:
         return Icons.event;
@@ -34,15 +35,15 @@ class EventIcon extends StatelessWidget {
     final type = event.type;
     if (type == null) return null;
 
-    switch (type.toLowerCase()) {
-      case 'maintenance':
+    switch (type) {
+      case EventTypeEnum.maintenance:
         return Colors.orange;
-      case 'refuel':
+      case EventTypeEnum.refuel:
         final isFullTank = event.refuelInfo?.fullTank ?? false;
         return isFullTank ? Colors.teal : Colors.green;
-      case 'repair':
+      case EventTypeEnum.repair:
         return Colors.red;
-      case 'service':
+      case EventTypeEnum.service:
         return Colors.blue;
       default:
         return null;

@@ -42,7 +42,7 @@ class EventListItem extends riverpod.ConsumerWidget {
           child: Icon(EventIcon.getIcon(event), color: eventColor),
         ),
         title: Text(
-          event.type ?? context.l10n.unknownEventType,
+          event.type?.label ?? context.l10n.unknownEventType,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),

@@ -13,6 +13,7 @@ import 'package:carman/elements/refuel_info_form.dart';
 import 'package:carman/elements/delete_event_dialog.dart';
 import 'package:carman/elements/event_icon.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/models/refuel_info.dart';
 import 'package:carman/models/vehicle.dart';
 
@@ -36,7 +37,7 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
 }
 
 class CreateEventPage extends riverpod.ConsumerStatefulWidget {
-  final String? initialType;
+  final EventTypeEnum? initialType;
   final Event? editingEvent;
 
   const CreateEventPage({super.key, this.initialType, this.editingEvent});
@@ -56,7 +57,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   final _occurredDateController = TextEditingController();
   final _occurredTimeController = TextEditingController();
 
-  String? _selectedType;
+  EventTypeEnum? _selectedType;
   RefuelInfo? _refuelInfo;
   DateTime? _occurredAt;
 
@@ -64,16 +65,6 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
   String? _errorMessage;
   late Vehicle _selectedVehicle;
 
-  final List<String> _eventTypes = [
-    'Maintenance',
-    'Refuel',
-    'Repair',
-    'Service',
-    'Oil Change',
-    'Tire Change',
-    'Inspection',
-    'Other',
-  ];
 
   void _fillSelectedVehicle() {
     final vehicle = ref.read(selectedVehicleProvider).asData?.value;
@@ -217,7 +208,9 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
     });
 
     try {
-      final refuelInfo = _selectedType == 'Refuel' ? _refuelInfo : null;
+      final refuelInfo = _selectedType == EventTypeEnum.refuel
+          ? _refuelInfo
+          : null;
 
       if (widget.editingEvent != null) {
         await _updateEvent(refuelInfo);
@@ -335,7 +328,9 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               child: EventIcon(
                 event: Event.preview(
                   type: _selectedType,
-                  refuelInfo: _selectedType == 'Refuel' ? _refuelInfo : null,
+                  refuelInfo: _selectedType == EventTypeEnum.refuel
+                      ? _refuelInfo
+                      : null,
                 ),
               ),
             ),
@@ -345,14 +340,17 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 const Icon(Icons.event_note, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: DropdownButtonFormField<String>(
+                  child: DropdownButtonFormField<EventTypeEnum>(
                     initialValue: _selectedType,
                     decoration: InputDecoration(
                       labelText: context.l10n.eventType,
                       border: const OutlineInputBorder(),
                     ),
-                    items: _eventTypes.map((type) {
-                      return DropdownMenuItem(value: type, child: Text(type));
+                    items: EventTypeEnum.values.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type.label),
+                      );
                     }).toList(),
                     onChanged: (value) {
                       setState(() {
@@ -360,7 +358,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                       });
                     },
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
+                      if (value == null) {
                         return context.l10n.pleaseSelectEventType;
                       }
                       return null;
@@ -444,7 +442,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
               ],
             ),
 
-            if (_selectedType == 'Refuel')
+            if (_selectedType == EventTypeEnum.refuel)
               RefuelInfoForm(
                 initialRefuelInfo: widget.editingEvent?.refuelInfo,
                 initialTotalCost: widget.editingEvent?.costValueMinor != null
@@ -463,7 +461,7 @@ class _CreateEventPageState extends riverpod.ConsumerState<CreateEventPage> {
                 },
               ),
 
-            if (_selectedType != 'Refuel') ...[
+            if (_selectedType != EventTypeEnum.refuel) ...[
               const SizedBox(height: 16),
               Row(
                 children: [

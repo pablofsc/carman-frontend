@@ -4,6 +4,7 @@ import 'package:carman/providers/selected_vehicle_provider.dart';
 import 'package:carman/providers/auth_provider.dart';
 import 'package:carman/repositories/event_repository.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/models/refuel_info.dart';
 
 final eventsProvider =
@@ -27,7 +28,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
 
   Future<void> createEvent({
     required String vehicleId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,
@@ -52,7 +53,7 @@ class EventsNotifier extends riverpod.AsyncNotifier<List<Event>> {
 
   Future<void> updateEvent({
     required String eventId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,

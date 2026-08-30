@@ -1,12 +1,13 @@
 import 'user.dart';
 import 'vehicle.dart';
+import 'enums/user_vehicle_role_enum.dart';
 
 class UserVehicleRel {
   final String id;
   final DateTime createdAt;
   final User user;
   final Vehicle vehicle;
-  final String relRole;
+  final UserVehicleRoleEnum relRole;
 
   UserVehicleRel({
     required this.id,
@@ -22,7 +23,7 @@ class UserVehicleRel {
       createdAt: DateTime.parse(json['createdAt']),
       user: User.fromJson(json['user']),
       vehicle: Vehicle.fromJson(json['vehicle']),
-      relRole: json['relRole'],
+      relRole: UserVehicleRoleEnum.fromValue(json['relRole'])!,
     );
   }
 
@@ -32,7 +33,7 @@ class UserVehicleRel {
       'createdAt': createdAt.toIso8601String(),
       'user': user.toJson(),
       'vehicle': vehicle.toJson(),
-      'relRole': relRole,
+      'relRole': relRole.value,
     };
   }
 }

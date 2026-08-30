@@ -58,7 +58,7 @@ class _DeleteEventDialogState
     return AlertDialog(
       title: Text(context.l10n.deleteEvent),
       content: Text(
-        '${context.l10n.deleteEventConfirm} ${widget.event.type ?? context.l10n.event}?',
+        '${context.l10n.deleteEventConfirm} ${widget.event.type?.label ?? context.l10n.event}?',
       ),
       actions: [
         TextButton(

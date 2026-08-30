@@ -1,5 +1,6 @@
 import 'package:carman/adapters/backend_adapter.dart';
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/models/refuel_info.dart';
 
 class EventRepository {
@@ -19,7 +20,7 @@ class EventRepository {
 
   static Future<Event> createEvent({
     required String vehicleId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,
@@ -43,7 +44,7 @@ class EventRepository {
 
   static Future<Event> updateEvent({
     required String eventId,
-    required String type,
+    required EventTypeEnum type,
     String? description,
     double? odometer,
     int? costValueMinor,

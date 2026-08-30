@@ -1,4 +1,5 @@
 import 'package:carman/models/event.dart';
+import 'package:carman/models/enums/event_type_enum.dart';
 import 'package:carman/utils/timezone_utils.dart';
 
 /// Pure calculations over a vehicle's event history, used to power the
@@ -38,12 +39,10 @@ class DashboardStats {
   /// one.
   static DateTime? lastOccurrenceOfType(
     List<Event> events,
-    String type,
+    EventTypeEnum type,
     String timezone,
   ) {
-    final matching = events.where(
-      (e) => (e.type ?? '').toLowerCase() == type.toLowerCase(),
-    );
+    final matching = events.where((e) => e.type == type);
 
     if (matching.isEmpty) return null;
 
@@ -87,15 +86,18 @@ class DashboardStats {
   }
 
   /// Sums [Event.costValueMinor] for [currency], grouped by event type.
-  static Map<String, int> totalsByType(List<Event> events, String currency) {
-    final totals = <String, int>{};
+  static Map<EventTypeEnum, int> totalsByType(
+    List<Event> events,
+    String currency,
+  ) {
+    final totals = <EventTypeEnum, int>{};
 
     for (final event in events) {
       if (event.costCurrencyCode != currency || event.costValueMinor == null) {
         continue;
       }
 
-      final type = event.type ?? 'Other';
+      final type = event.type ?? EventTypeEnum.other;
       totals[type] = (totals[type] ?? 0) + event.costValueMinor!;
     }
 
@@ -145,7 +147,7 @@ class DashboardStats {
         events
             .where(
               (e) =>
-                  (e.type ?? '').toLowerCase() == 'refuel' &&
+                  e.type == EventTypeEnum.refuel &&
                   e.odometer != null &&
                   e.refuelInfo?.fuelAmount != null,
             )
@@ -188,7 +190,7 @@ class DashboardStats {
     final prices = events
         .where(
           (e) =>
-              (e.type ?? '').toLowerCase() == 'refuel' &&
+              e.type == EventTypeEnum.refuel &&
               e.costCurrencyCode == currency &&
               e.refuelInfo?.fuelUnitPrice != null,
         )
@@ -210,7 +212,7 @@ class DashboardStats {
     if (total == 0) return null;
 
     final fuel = byType.entries
-        .where((e) => e.key.toLowerCase() == 'refuel')
+        .where((e) => e.key == EventTypeEnum.refuel)
         .fold<int>(0, (sum, e) => sum + e.value);
 
     return fuel / total;

@@ -1,6 +1,7 @@
 import 'vehicle.dart';
 import 'user.dart';
 import 'refuel_info.dart';
+import 'enums/event_type_enum.dart';
 
 class Event {
   final String id;
@@ -9,7 +10,7 @@ class Event {
   final DateTime? occurredAt;
   final Vehicle vehicle;
   final User author;
-  final String? type;
+  final EventTypeEnum? type;
   final String? description;
   final double? odometer;
   final int? costValueMinor;
@@ -31,7 +32,10 @@ class Event {
     this.refuelInfo,
   });
 
-  factory Event.preview({required String? type, RefuelInfo? refuelInfo}) {
+  factory Event.preview({
+    required EventTypeEnum? type,
+    RefuelInfo? refuelInfo,
+  }) {
     return Event(
       id: '',
       createdAt: DateTime.now(),
@@ -68,7 +72,7 @@ class Event {
           : null,
       vehicle: Vehicle.fromJson(json['vehicle']),
       author: User.fromJson(json['author']),
-      type: json['type'],
+      type: EventTypeEnum.fromValue(json['type']),
       description: json['description'],
       odometer: json['odometer']?.toDouble(),
       costValueMinor: json['costValueMinor'],
@@ -86,7 +90,7 @@ class Event {
       'modifiedAt': modifiedAt?.toIso8601String(),
       'vehicle': {'id': vehicle.id},
       'author': {'id': author.id},
-      'type': type,
+      'type': type?.value,
       'description': description,
       'odometer': odometer,
       'costValueMinor': costValueMinor,

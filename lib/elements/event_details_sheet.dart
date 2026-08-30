@@ -69,7 +69,7 @@ class EventDetailsSheet extends riverpod.ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            event.type ?? context.l10n.unknownEventType,
+                            event.type?.label ?? context.l10n.unknownEventType,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

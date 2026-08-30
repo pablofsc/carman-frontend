@@ -13,13 +13,6 @@ import 'package:carman/utils/currency_utils.dart';
 import 'package:carman/utils/dashboard_stats.dart';
 import 'package:carman/utils/timezone_utils.dart';
 
-String _typeLabel(String type) {
-  final words = type.split('_').where((w) => w.isNotEmpty);
-  return words
-      .map((w) => w[0].toUpperCase() + w.substring(1).toLowerCase())
-      .join(' ');
-}
-
 class DashboardPage extends riverpod.ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -351,7 +344,7 @@ class _SpendingCard extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          _typeLabel(entry.key),
+                          entry.key.label,
                           style: theme.textTheme.bodyMedium,
                         ),
                       ),
