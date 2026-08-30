@@ -27,7 +27,7 @@ class _DecimalInputFormatter extends services.TextInputFormatter {
 enum _Field { price, amount, total }
 
 class RefuelValues extends riverpod.ConsumerStatefulWidget {
-  final void Function({double? amount, double? total})? onChange;
+  final void Function({double? amount, double? total, double? price})? onChange;
   final double? initialFuelAmount;
   final double? initialCostTotal;
 
@@ -126,6 +126,7 @@ class RefuelValuesState extends riverpod.ConsumerState<RefuelValues> {
       widget.onChange?.call(
         amount: double.tryParse(_amountController.text),
         total: double.tryParse(_totalController.text),
+        price: double.tryParse(_priceController.text),
       );
     }
   }

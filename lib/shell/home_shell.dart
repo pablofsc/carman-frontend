@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:carman/extensions/l10n_extension.dart';
 import 'package:carman/elements/vehicle_selector.dart';
+import 'package:carman/pages/dashboard_page.dart';
 import 'package:carman/pages/vehicle_page.dart';
 import 'package:carman/pages/events_page.dart';
 import 'package:carman/pages/settings_page.dart';
@@ -21,7 +22,13 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    _pages = [const VehiclePage(), const EventsPage(), const SettingsPage()];
+    
+    _pages = [
+      const DashboardPage(),
+      const VehiclePage(),
+      const EventsPage(),
+      const SettingsPage(),
+    ];
   }
 
   @override
@@ -48,6 +55,11 @@ class _HomeShellState extends State<HomeShell> {
           });
         },
         destinations: <Widget>[
+          NavigationDestination(
+            icon: const Icon(Icons.dashboard_outlined),
+            selectedIcon: const Icon(Icons.dashboard),
+            label: context.l10n.navDashboard,
+          ),
           NavigationDestination(
             icon: const Icon(Icons.car_rental_outlined),
             selectedIcon: const Icon(Icons.car_rental),

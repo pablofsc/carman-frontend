@@ -114,6 +114,12 @@
   "cost": "Cost",
   "description": "Description",
   "refuelDetails": "Refuel Details",
+  "kmPerLiterSinceLastRefuel": "{value} km/L since last refuel",
+  "@kmPerLiterSinceLastRefuel": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
   "yearMustBeBetween": "Must be {from}-{to}",
   "@yearMustBeBetween": {
     "placeholders": {
@@ -130,5 +136,30 @@
   "setUpPreferences": "Set up your preferences",
   "setUpPreferencesWelcome": "Welcome! Let's configure your preferences.",
   "setUpPreferencesSubtitle": "You can always change these later in the settings page.",
-  "continueButton": "Continue"
+  "continueButton": "Continue",
+  "navDashboard": "Dashboard",
+  "vehicleOverview": "Vehicle Overview",
+  "currentOdometer": "Current Odometer",
+  "totalDistance": "Total Distance",
+  "lastEvent": "Last Event",
+  "today": "Today",
+  "never": "Never",
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
+  "spending": "Spending",
+  "thisMonth": "This Month",
+  "thisYear": "This Year",
+  "allTime": "All Time",
+  "byType": "By Type",
+  "monthlyTrend": "Monthly Trend",
+  "costPerKm": "Cost per km",
+  "otherCurrenciesNote": "You also have entries in other currencies, not included above.",
+  "fuelEconomy": "Fuel Economy",
+  "averageConsumption": "Average Consumption",
+  "notEnoughData": "Not enough data yet",
+  "averagePricePerLiter": "Avg. Price/Liter"
 }

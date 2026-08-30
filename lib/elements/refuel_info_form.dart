@@ -25,6 +25,7 @@ class RefuelInfoFormState extends riverpod.ConsumerState<RefuelInfoForm> {
   bool _isFullTank = false;
   double? _amount;
   double? _total;
+  double? _price;
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class RefuelInfoFormState extends riverpod.ConsumerState<RefuelInfoForm> {
       fuelType: widget.initialRefuelInfo?.fuelType,
       fuelAmount: _amount,
       fuelAmountUnit: 'L',
+      fuelUnitPrice: _price != null ? (_price! * 100).round() : null,
       fullTank: _isFullTank,
     );
   }
@@ -83,9 +85,10 @@ class RefuelInfoFormState extends riverpod.ConsumerState<RefuelInfoForm> {
         const SizedBox(height: 16),
 
         RefuelValues(
-          onChange: ({amount, total}) {
+          onChange: ({amount, total, price}) {
             _amount = amount;
             _total = total;
+            _price = price;
             widget.onChange?.call(total: total, refuelInfo: readInputs());
           },
           initialFuelAmount: widget.initialRefuelInfo?.fuelAmount,
